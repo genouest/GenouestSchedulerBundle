@@ -1,0 +1,30 @@
+{% extends "::base.html.twig" %}
+
+{% block content %}
+<div class="jobGeneralInfo">
+  <h3>Job {{ job.title }} successfully submitted.</h3>
+
+  {% if job.hasValidEmail %}
+    <p>An email will be sent to {{ job.email }} upon job completion.</p>
+  {% endif %}
+  
+  <p class="jobStatus">
+    Job status: <span class="status">{{ status }}</span>
+  </p>
+
+  {% if job.backURL %}
+    <p>
+      <a href="{{ job.backURL }}">Click here to launch another job.</a>
+    </p>
+  {% endif %}
+  
+  <p class="refresh">Your navigator doesn't support Javascript. <a href="{{ path('_job_status', { 'uid': job.jobuid, '_format': 'html'}) }}">Refresh</a> manually this page to update the job status.</p>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+jQuery(document).ready(statusTracker('{{ path('_job_status', { 'uid': job.jobuid, '_format': 'js'}) }}'))
+//]]>
+</script>
+
+{% endblock %}

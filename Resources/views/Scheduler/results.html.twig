@@ -1,0 +1,58 @@
+{% extends "::base.html.twig" %}
+
+{% block content %}
+<div class="jobGeneralInfo">
+  <h3>Job {{ job.title }} finished!</h3>
+
+  {% if job.hasValidEmail %}
+    <p>An email has been sent to {{ job.email }}.</p>
+  {% endif %}
+
+  <div class="progressContainer">
+    <div class="progressBar" style="background-position: 1px 0;"> 
+    </div>
+  </div>
+
+  {% if job.backURL %}
+    <p style="text-align:center;">
+      <a href="{{ job.backURL }}">Click here to launch another job.</a>
+    </p>
+  {% endif %}
+</div>
+
+
+
+<div class="jobResults">
+  <h3>Results</h3>
+  {% if job.hasResultViewers %}
+    <div class="viewers">
+      <p>View the results online:</p>
+      <ul>
+      {% for viewer in job.resultViewers %}
+        {% if viewer %}
+          <li>
+          <a href="{{ viewer.url }}">{{ viewer.displayName }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if job.hasResultFiles %}
+    <div class="downloads">
+      <p>Download the result files:</p>
+      <ul>
+      {% for file in job.resultFiles %}
+        {% if file %}
+          <li>
+          <a href="{{ resultUrl }}{{ file.fsName }}">{{ file.displayName }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "::base.html.twig" %}
+
+{% block content %}
+<div class="jobGeneralInfo">
+  <h3>Recent jobs</h3>
+  
+  <ul class="history">
+    {% for job in jobs %}
+      <li>{{ job.uid }}<span class=\"status\"></span></li>
+    {% endfor %}
+  </ul>
+
+</div>
+{% endblock %}

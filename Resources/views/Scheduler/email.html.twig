@@ -1,0 +1,29 @@
+{% autoescape false %}
+{% if job.title %}
+Your {{ job.programName }} job "{{ job.title }}" ({{ job.jobUid }}) is completed.
+{% else %}
+Your {{ job.programName }} job {{ job.jobUid }} is completed.
+{% endif %}
+
+Results are available at the following address: {{ url('_job_results', { 'uid': job.jobuid}) }}
+
+You can also access directly to your results with the following links:
+
+{% if job.hasResultViewers %}
+  {% for name, viewer in job.resultViewers %}
+    {% if viewer %}
+      {{ viewer.displayName }}: {{ viewer.url }}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if job.hasResultFiles %}
+  {% for name, file in job.resultFiles %}
+    {% if file %}
+    {{ file.displayName }}: {{ resultUrlPrefix }}{{ file.fsName }}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+To launch another job, go to {{ job.backUrl }}
+{% endautoescape %}
