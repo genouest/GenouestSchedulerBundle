@@ -92,7 +92,7 @@ class DrmaaScheduler implements SchedulerInterface {
         if ($jobFile) {
             $fError = $fError || (false === @fwrite($jobFile,$script));
             $fError = $fError || (false === @fclose($jobFile));
-            $fError = $fError || (false === @chmod($jobFileName, 0755)); // FIXME catch error and throw scheduler exception
+            $fError = $fError || (false === @chmod($jobFileName, 0755));
         }
 
         if ($fError) {
