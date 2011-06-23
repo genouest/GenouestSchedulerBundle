@@ -3,32 +3,33 @@
 namespace Genouest\Bundle\SchedulerBundle\Entity;
 
 use Genouest\Bundle\SchedulerBundle\Model\ResultViewer as BaseResultViewer;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @orm:Entity
+ * @ORM\Entity
  */
 class ResultViewer extends BaseResultViewer {
 
     /**
-     * @orm:Id
-     * @orm:Column(name="viewer_id", type="integer")
-     * @orm:GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(name="viewer_id", type="integer")
+     * @ORM\GeneratedValue
      */
     protected $viewerId;
 
     /**
-     * @orm:ManyToOne(targetEntity="Job", inversedBy="resultFiles")
-     * @orm:JoinColumn(name="job_uid", referencedColumnName="job_uid")
+     * @ORM\ManyToOne(targetEntity="Job", inversedBy="resultFiles")
+     * @ORM\JoinColumn(name="job_uid", referencedColumnName="job_uid")
      */
     protected $job;
 
     /**
-     * @orm:Column(name="url", type="string", length="255")
+     * @ORM\Column(name="url", type="string", length="255")
      */
     protected $url;
 
     /**
-     * @orm:Column(name="display_name", type="string", length="255")
+     * @ORM\Column(name="display_name", type="string", length="255")
      */
     protected $displayName;
 

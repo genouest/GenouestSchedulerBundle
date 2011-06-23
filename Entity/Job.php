@@ -4,91 +4,92 @@ namespace Genouest\Bundle\SchedulerBundle\Entity;
 
 use \Doctrine\Common\Collections\ArrayCollection;
 use Genouest\Bundle\SchedulerBundle\Model\Job as BaseJob;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @orm:Entity(repositoryClass="Genouest\Bundle\SchedulerBundle\Entity\JobRepository")
- * @orm:HasLifecycleCallbacks
+ * @ORM\Entity(repositoryClass="Genouest\Bundle\SchedulerBundle\Entity\JobRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Job extends BaseJob {
 
     /**
-     * @orm:Id
-     * @orm:Column(name="job_uid", type="string", length="255")
-     * @orm:GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(name="job_uid", type="string", length="255")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     protected $jobUid;
 
     /**
-     * @orm:Column(name="scheduler_jobid", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="scheduler_jobid", type="string", length="255", nullable=TRUE)
      */
-	  protected $schedulerJobId;
+    protected $schedulerJobId;
 
     /**
-     * @orm:Column(name="user_id", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="user_id", type="string", length="255", nullable=TRUE)
      */
-	  protected $userId;
+    protected $userId;
 
     /**
-     * @orm:Column(name="command", type="text")
+     * @ORM\Column(name="command", type="text")
      */
-	  protected $command;
+    protected $command;
 
     /**
-     * @orm:Column(name="program_name", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="program_name", type="string", length="255", nullable=TRUE)
      */
-	  protected $programName;
+    protected $programName;
 
     /**
-     * @orm:Column(name="title", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="title", type="string", length="255", nullable=TRUE)
      */
-	  protected $title;
+    protected $title;
 
     /**
-     * @orm:Column(name="email", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="email", type="string", length="255", nullable=TRUE)
      */
-	  protected $email;
+    protected $email;
 
     /**
-     * @orm:Column(name="back_url", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="back_url", type="string", length="255", nullable=TRUE)
      */
-	  protected $backUrl;
+    protected $backUrl;
 
     /**
-     * @orm:Column(name="result_page", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="result_page", type="string", length="255", nullable=TRUE)
      */
-	  protected $resultPage;
+    protected $resultPage;
 
     /**
-     * @orm:Column(name="created_at", type="datetime")
+     * @ORM\Column(name="created_at", type="datetime")
      */
     protected $createdAt;
 
     /**
-     * @orm:Column(name="updated_at", type="datetime")
+     * @ORM\Column(name="updated_at", type="datetime")
      */
     protected $updatedAt;
 
     /**
-     * @orm:OneToMany(targetEntity="ResultFile", mappedBy="job", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="ResultFile", mappedBy="job", cascade={"persist", "remove"})
      */
-	  protected $resultFiles;
+    protected $resultFiles;
 
     /**
-     * @orm:OneToMany(targetEntity="ResultViewer", mappedBy="job", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="ResultViewer", mappedBy="job", cascade={"persist", "remove"})
      */
-	  protected $resultViewers;
-	  
+    protected $resultViewers;
+    
 
-	  public function __construct() {
+    public function __construct() {
         $this->resultFiles = new ArrayCollection();
         $this->resultViewers = new ArrayCollection();
 
-       	// constructor is never called by Doctrine
+         // constructor is never called by Doctrine
         $this->createdAt = $this->updatedAt = new \DateTime("now");
     }
 
     /**
-     * @orm:PreUpdate
+     * @ORM\PreUpdate
      */
     public function resetUpdated()
     {

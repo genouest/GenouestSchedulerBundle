@@ -3,6 +3,8 @@
 namespace Genouest\Bundle\SchedulerBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Genouest\Bundle\SchedulerBundle\Entity\Job;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,7 +69,8 @@ class SchedulerController extends Controller
     /**
      *  Get the status of a job and display the results if finished (or wait until it is finished).
      *
-     * @extra:Route("/job/status/{uid}.{_format}", name = "_job_status", requirements = {"_format" = "html|js"})
+     * @Route("/job/status/{uid}.{_format}", name = "_job_status", requirements = {"_format" = "html|js"})
+     * @Template()
      *
      * @param $uid string The uid of the job to watch
      */
@@ -117,7 +120,8 @@ class SchedulerController extends Controller
     /**
      * Show results
      *
-     * @extra:Route("/job/results/{uid}", name = "_job_results")
+     * @Route("/job/results/{uid}", name = "_job_results")
+     * @Template()
      */
     public function jobResultsAction($uid) {
         // Load job from db
@@ -143,7 +147,8 @@ class SchedulerController extends Controller
     /**
      * Show the job history of current user
      *
-     * @extra:Route("/job/history", name = "_job_history")
+     * @Route("/job/history", name = "_job_history")
+     * @Template()
      */
     public function historyAction() {
         $jobRepo = $this->get('job.repository');
