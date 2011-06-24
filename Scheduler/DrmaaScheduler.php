@@ -8,46 +8,46 @@ use Genouest\Bundle\SchedulerBundle\Entity\Job;
 class DrmaaScheduler implements SchedulerInterface {
     
     // Drmaa job state codes
-	  const STATE_UNDETERMINED                  =  0; /* process status cannot be determined */
-	  const STATE_WAITING                       = 16; /* job is queued and active */
-	  const STATE_WAITING_SYSTEM_ON_HOLD        = 17; /* job is queued and in system hold */
-	  const STATE_WAITING_USER_ON_HOLD          = 18; /* job is queued and in user hold */
-	  const STATE_WAITING_USER_SYSTEM_ON_HOLD   = 19; /* job is queued and in user and system hold */
-	  const STATE_RUNNING                       = 32; /* job is running */
-	  const STATE_SYSTEM_SUSPENDED              = 33; /* job is system suspended */
-	  const STATE_USER_SUSPENDED                = 34; /* job is user suspended */
-	  const STATE_USER_SYSTEM_SUSPENDED         = 35; /* job is user and system suspended */
-	  const STATE_FINISHED                      = 48; /* job finished normally */
-	  const STATE_FAILED                        = 64; /* job finished, but failed */
-	  
-	  protected $textJobState = array(
-	      self::STATE_UNDETERMINED => 'unknown',
-	      self::STATE_WAITING => 'waiting',
-	      self::STATE_WAITING_SYSTEM_ON_HOLD => 'waiting',
-	      self::STATE_WAITING_USER_ON_HOLD => 'waiting',
-	      self::STATE_WAITING_SYSTEM_ON_HOLD => 'waiting',
-	      self::STATE_RUNNING => 'running',
-	      self::STATE_SYSTEM_SUSPENDED => 'suspended',
-	      self::STATE_USER_SUSPENDED => 'suspended',
-	      self::STATE_USER_SYSTEM_SUSPENDED => 'suspended',
-	      self::STATE_FINISHED => 'finished',
-	      self::STATE_FAILED => 'failed',
-	      );
+    const STATE_UNDETERMINED                  =  0; /* process status cannot be determined */
+    const STATE_WAITING                       = 16; /* job is queued and active */
+    const STATE_WAITING_SYSTEM_ON_HOLD        = 17; /* job is queued and in system hold */
+    const STATE_WAITING_USER_ON_HOLD          = 18; /* job is queued and in user hold */
+    const STATE_WAITING_USER_SYSTEM_ON_HOLD   = 19; /* job is queued and in user and system hold */
+    const STATE_RUNNING                       = 32; /* job is running */
+    const STATE_SYSTEM_SUSPENDED              = 33; /* job is system suspended */
+    const STATE_USER_SUSPENDED                = 34; /* job is user suspended */
+    const STATE_USER_SYSTEM_SUSPENDED         = 35; /* job is user and system suspended */
+    const STATE_FINISHED                      = 48; /* job finished normally */
+    const STATE_FAILED                        = 64; /* job finished, but failed */
+    
+    protected $textJobState = array(
+        self::STATE_UNDETERMINED => 'unknown',
+        self::STATE_WAITING => 'waiting',
+        self::STATE_WAITING_SYSTEM_ON_HOLD => 'waiting',
+        self::STATE_WAITING_USER_ON_HOLD => 'waiting',
+        self::STATE_WAITING_SYSTEM_ON_HOLD => 'waiting',
+        self::STATE_RUNNING => 'running',
+        self::STATE_SYSTEM_SUSPENDED => 'suspended',
+        self::STATE_USER_SUSPENDED => 'suspended',
+        self::STATE_USER_SYSTEM_SUSPENDED => 'suspended',
+        self::STATE_FINISHED => 'finished',
+        self::STATE_FAILED => 'failed',
+        );
 
     protected $sharedDir;
     protected $workDir;
     protected $resultUrl;
     protected $mailBin;
     protected $mailAuthor;
-	  
-	  public function __construct($sharedDir, $workDir, $resultUrl, $mailBin, $mailAuthorName, $mailAuthorAddress) {
-	      $this->sharedDir = $this->addTrailingSlash($sharedDir);
-	      $this->workDir = $this->addTrailingSlash($workDir);
-	      $this->resultUrl = $resultUrl;
-	      $this->mailBin = $mailBin;
-	      $this->mailAuthorName = $mailAuthorName;
-	      $this->mailAuthorAddress = $mailAuthorAddress;
-	  }
+    
+    public function __construct($sharedDir, $workDir, $resultUrl, $mailBin, $mailAuthorName, $mailAuthorAddress) {
+        $this->sharedDir = $this->addTrailingSlash($sharedDir);
+        $this->workDir = $this->addTrailingSlash($workDir);
+        $this->resultUrl = $resultUrl;
+        $this->mailBin = $mailBin;
+        $this->mailAuthorName = $mailAuthorName;
+        $this->mailAuthorAddress = $mailAuthorAddress;
+    }
 
     /**
      * Generate shell script to launch the job and launches it.
@@ -56,7 +56,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object (this object is modified by this function).
      * @returns Genouest\Bundle\SchedulerBundle\Entity\Job A launched Job object
      */
-	  public function execute(Job $job) {
+    public function execute(Job $job) {
         
         if (!$job->canBeLaunched()) {
             // Cannot launch the job
@@ -104,7 +104,7 @@ class DrmaaScheduler implements SchedulerInterface {
         $job->setSchedulerJobId($jobId);
         
         return $job;
-	  }
+    }
 
     /**
      * Get the job status
@@ -112,9 +112,9 @@ class DrmaaScheduler implements SchedulerInterface {
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
      * @returns int Job status
      */
-	  public function getStatus(Job $job) {
-		    return qstat($job->getSchedulerJobId());
-	  }
+    public function getStatus(Job $job) {
+        return qstat($job->getSchedulerJobId());
+    }
     
     /**
      * Is the given job finished?
@@ -127,25 +127,25 @@ class DrmaaScheduler implements SchedulerInterface {
         
         return (in_array($status, array(self::STATE_UNDETERMINED, self::STATE_FINISHED, self::STATE_FAILED)));
     }
-	
+  
     /**
      * Get a string describing the job status retrieved from DRMAA
      *
      * @param int a job status code
      * @returns string Job status as a string
      */
-	  public function getStatusAsText($status) {
-	      if (array_key_exists($status, $this->textJobState)) {
-	      
-	          if ($status === self::STATE_UNDETERMINED)
-	              return $this->textJobState[self::STATE_FINISHED]; // Undetermined means finished for drmaa
-	          
-	          return $this->textJobState[$status];
-	      }
-	      
-	      // Default is 'unknown'
-	      return $this->textJobState[0];
-	  }
+    public function getStatusAsText($status) {
+        if (array_key_exists($status, $this->textJobState)) {
+        
+            if ($status === self::STATE_UNDETERMINED)
+                return $this->textJobState[self::STATE_FINISHED]; // Undetermined means finished for drmaa
+            
+            return $this->textJobState[$status];
+        }
+        
+        // Default is 'unknown'
+        return $this->textJobState[0];
+    }
     
     /**
      * Get the local dir only visible by the machine running the job
@@ -153,14 +153,14 @@ class DrmaaScheduler implements SchedulerInterface {
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
      * @returns string The work dir of the given job.
      */
-	  public function getWorkDir(Job $job) {
-	      $workDir = $this->workDir.$job->getProgramName().'/'.$job->getJobUid().'/';
+    public function getWorkDir(Job $job) {
+        $workDir = $this->workDir.$job->getProgramName().'/'.$job->getJobUid().'/';
 
-	      if (!is_dir($workDir))
-      	    mkdir($workDir, 0777, true);
+        if (!is_dir($workDir))
+            mkdir($workDir, 0777, true);
 
-		    return $workDir;
-	  }
+        return $workDir;
+    }
 
     /**
      * Get the dir accessible by all the machines
@@ -176,7 +176,7 @@ class DrmaaScheduler implements SchedulerInterface {
 
         return $resultDir;
     }
-	  
+    
 
     /**
      * Generate shell script to check directory existence.
@@ -184,7 +184,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
      * @returns string Shell script to check directory existence
      */
-	  protected function checkDirectoryScript(Job $job) {
+    protected function checkDirectoryScript(Job $job) {
         $script = "if [ ! -d ".$this->getWorkDir($job)." ]\n";
         $script .= "then\n";
         $script .= "mkdir -p ".$this->getWorkDir($job)."\n";
@@ -194,7 +194,7 @@ class DrmaaScheduler implements SchedulerInterface {
         $script .= "mkdir -p ".$this->getResultDir($job)."\n";
         $script .= "fi\n";
         return $script;
-	  }
+    }
     
     /**
      * Add a trailing slash to an URL (only if there isn't already one).
@@ -216,8 +216,8 @@ class DrmaaScheduler implements SchedulerInterface {
      * @returns string The results url prefix of the given job.
      */
     public function getResultUrl(Job $job) {
-	      
-	      return $this->resultUrl.$job->getProgramName().'/'.$job->getJobUid().'/';
+        
+        return $this->resultUrl.$job->getProgramName().'/'.$job->getJobUid().'/';
     }
 
 }
