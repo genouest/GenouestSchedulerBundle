@@ -100,7 +100,7 @@ class DrmaaScheduler implements SchedulerInterface {
             throw new FileException(sprintf('Could not create file %s (%s)', $resultDir.$job->getJobUid().".sh", strip_tags($error['message'])));
         }
         
-        $jobId = qsub($jobFileName,$job->getProgramName());
+        $jobId = qsub($jobFileName, $job->getProgramName()); // No need to check if NULL as if it is, there's a PHP error catched by Symfony
         $job->setSchedulerJobId($jobId);
         
         return $job;
