@@ -21,7 +21,7 @@ class SchedulerController extends Controller
      */
     public function launchJobAction(Job $job) {
     
-        $scheduler = $this->get('scheduler.method');
+        $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
         $em = $this->get('scheduler.object_manager');
         
@@ -79,7 +79,7 @@ class SchedulerController extends Controller
     public function jobStatusAction($uid) {
     
         // Load job from db
-        $scheduler = $this->get('scheduler.method');
+        $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
         $job = $jobRepo->find($uid);
         
@@ -130,7 +130,7 @@ class SchedulerController extends Controller
     public function jobKillAction($uid) {
     
         // Load job from db
-        $scheduler = $this->get('scheduler.method');
+        $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
         $job = $jobRepo->find($uid);
         
@@ -159,7 +159,7 @@ class SchedulerController extends Controller
      */
     public function jobResultsAction($uid) {
         // Load job from db
-        $scheduler = $this->get('scheduler.method');
+        $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
         $job = $jobRepo->find($uid);
         
