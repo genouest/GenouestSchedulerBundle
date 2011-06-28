@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}Job_scheduler{% endblock %}</title>
+        
+        <script type="text/javascript" src="{{ asset('bundles/scheduler/js/jquery-1.6.1.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/scheduler/js/scheduler.js') }}"></script>
+        <link href="{{ asset('bundles/scheduler/css/scheduler.css') }}" rel="stylesheet" type="text/css" media="screen" />
+
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <div id="menu">
+		    <ul id="nav">
+                {% block menu %}
+                    <li>
+                        <a href="{{ path('_welcome') }}" title="Homepage">Homepage</a>
+                    </li>
+                    <li class="right">
+                        <a title="Access to all your previous results" href="{{ path('_job_history') }}">My jobs</a>
+                    </li>
+                {% endblock %}
+            </ul>
+        </div>
+
+        <div id="middle">
+            <div id="content">
+                {% block scheduler %}{% endblock %}
+            </div>
+        </div>
+    
+        <div id="footer">
+	        {% block footer %}Some_footer_info{% endblock %}
+        </div>
+    </body>
+</html>

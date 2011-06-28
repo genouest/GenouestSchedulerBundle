@@ -1,14 +1,13 @@
-{% extends "::base.html.twig" %}
+{% extends "SchedulerBundle:Scheduler:layout.html.twig" %}
 
-{% block content %}
+{% block scheduler %}
 <div class="jobGeneralInfo">
-  <h3>Recent jobs</h3>
-  
-  <ul class="history">
-    {% for job in jobs %}
-      <li>{{ job.uid }}<span class=\"status\"></span></li>
-    {% endfor %}
-  </ul>
+    <h3>Recent jobs</h3>
 
+    <ul class="history">
+        {% for job in jobs %}
+            <li>{{ job.uid }}<span class=\"status\"></span></li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}

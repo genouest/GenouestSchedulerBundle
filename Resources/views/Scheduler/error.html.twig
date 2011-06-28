@@ -1,24 +1,24 @@
-{% extends "::base.html.twig" %}
+{% extends "SchedulerBundle:Scheduler:layout.html.twig" %}
 
-{% block content %}
+{% block scheduler %}
 <div class="jobError">
-  <h3>An error occured</h3>
+    <h3>An error occured</h3>
 
-  <p>An error occured during the submission of your job</p>
-  
-  {% if error %}
-    <p class="error">{{ error }}</p>
-  {% endif %}
-  
-  <p>Retry to submit your job in a short moment. If it still doesn't work, please send an email to the administrators of this website, with this reference: {{ uid }}. Sorry for the inconvenience.</p>
+    <p>An error occured during the submission of your job</p>
 
-  <p></p>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
 
-  {% if job and job.backURL %}
-    <p style="text-align:center;">
-      <a href="{{ job.backURL }}">Click here to launch another job.</a>
-    </p>
-  {% endif %}
+    <p>Retry to submit your job in a short moment. If it still doesn't work, please send an email to the administrators of this website, with this reference: {{ uid }}. Sorry for the inconvenience.</p>
+
+    <p></p>
+
+    {% if job and job.backURL %}
+        <p style="text-align:center;">
+            <a href="{{ job.backURL }}">Click here to launch another job.</a>
+        </p>
+    {% endif %}
 </div>
 {% endblock %}
 

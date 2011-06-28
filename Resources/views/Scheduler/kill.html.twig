@@ -1,6 +1,6 @@
-{% extends "::base.html.twig" %}
+{% extends "SchedulerBundle:Scheduler:layout.html.twig" %}
 
-{% block content %}
+{% block scheduler %}
 <div class="jobGeneralInfo">
     {% if success %}
         <h3>The job {{ job.title }} was killed successfully.</h3>

@@ -1,0 +1,233 @@
+html {
+    font-size: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva, sans-serif;
+    font-size:11px;
+    line-height:1.5em;
+    color: black;
+    background:#F7F7F7 none repeat scroll 0 0;
+    height:100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 1em 0 .5em 0;
+    line-height: 1.2;
+    font-weight: bold;
+    font-style: normal;
+}
+h1 {
+    font-size: 1.75em;
+    text-align:center;
+}
+h2 {
+    font-size: 1.5em;
+}
+h3 {
+    font-size: 1.25em;
+    text-align:center;
+    line-height: 2em;
+}
+h4 {
+    font-size: 1em;
+}
+
+ul, ol {
+    margin: .75em 0 .75em 32px;
+    padding: 0;
+}
+
+p {
+    margin: .75em 0;
+}
+
+a {
+    text-decoration: underline;
+}
+a:link, a:visited {
+  color:#32639A;
+  text-decoration:underline;
+}
+a:hover, a:focus, a:active {
+  color:#4486C7;
+}
+a img {
+    border: none;
+}
+
+#menu {
+  background:#333333 none repeat scroll 0 0;
+  height:32px;
+  margin:0 auto;
+  padding:0;
+  max-width:1280px;
+  min-width:1000px;
+  color:white;
+  vertical-align:middle;
+}
+
+#nav {
+  line-height:30px;
+  list-style-position:outside;
+  list-style-type:none;
+  margin:0;
+  padding:0;
+  position:relative;
+}
+
+#nav li {
+  float:left;
+  position:relative;
+  list-style-position:outside;
+  list-style-type:none;
+}
+
+#nav a {
+  background-color:#333333;
+  border:1px solid #333333;
+  color:#FFFFFF;
+  display:block;
+  padding:0 5px;
+  text-decoration:none;
+  z-index:9;
+}
+
+#nav a:hover {
+  background-color:#FFFFFF;
+  color:#333333;
+}
+
+#middle {
+  max-width:1280px;
+  min-width:1000px;
+  min-height:530px;
+  margin:0 auto;
+  text-align:justify;
+}
+
+#content {
+  margin:30px 20px;
+}
+
+#footer {
+  color:#686567;
+  font-size:11px;
+  line-height:1.5em;
+  border-top: 1px solid #E2E2E2;
+  border-bottom: 1px solid #E2E2E2;
+  max-width:1280px;
+  min-width:1000px;
+  margin:0 auto;
+  text-align:center;
+  vertical-align:middle;
+  background:#FFFFFF none repeat scroll 0 0;
+  padding: 5px;
+  clear:both;
+}
+
+
+p.warn {
+  margin: 4px 0;
+  padding: 4px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  background-color: #ffc;
+}
+
+p.error {
+  margin: 4px 0;
+  padding: 4px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  background-color: #f33;
+  color: #fff;
+}
+
+ul.error {
+  margin: 4px 0;
+  padding: 4px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  background-color: #f33;
+  color: #fff;
+}
+
+ul.warn {
+  margin: 4px 0;
+  padding: 4px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  background-color: #ffc;
+}
+
+ul#nav li.right {
+  float:right;
+}
+
+div.jobGeneralInfo {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    margin-left:auto;
+    margin-right:auto;
+    padding: 1em;
+    border: 1px solid #aaa;
+    background-color:#dfeaf1;
+    width:70%;
+}
+
+div.jobGeneralInfo p {
+  padding-top: 0.8em;
+  text-align:center;
+}
+
+div.jobResults {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    margin-left:auto;
+    margin-right:auto;
+    padding: 1em;
+    border: 1px dashed #ddd;
+    background-color:#eeeeee;
+    width:70%;
+}
+
+div.jobError {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    margin-left:auto;
+    margin-right:auto;
+    padding: 1em;
+    border: 1px solid #aaa;
+    background-color:#dfeaf1;
+    width:70%;
+}
+
+div.progressContainer {
+  margin:0;
+  padding:0;
+  padding-left:2px;
+  width: 202px;
+  height:12px;
+  margin-left:auto;
+  margin-right:auto;
+  background-image:url(../images/progressbar_long.gif);
+}
+
+div.progressBar {
+  border:0px;
+  margin:0;
+  padding:0;
+  width: 200px;
+  height:12px;
+  text-align:center;
+  font-size:9px;
+  background-image:url(../images/progressbg_green_long.gif);
+  background-repeat:no-repeat;
+}
+
+div.jobResults div.viewers ul, div.jobResults div.downloads ul {
+  list-style-type: none;
+}

@@ -1,30 +1,34 @@
-{% extends "::base.html.twig" %}
+{% extends "SchedulerBundle:Scheduler:layout.html.twig" %}
 
-{% block content %}
+{% block scheduler %}
 <div class="jobGeneralInfo">
-  <h3>Job {{ job.title }} successfully submitted.</h3>
+    <h3>Job {{ job.title }} successfully submitted.</h3>
 
-  {% if job.hasValidEmail %}
-    <p>An email will be sent to {{ job.email }} upon job completion.</p>
-  {% endif %}
-  
-  <p class="jobStatus">
-    Job status: <span class="status">{{ status }}</span> (<a href="{{ path('_job_kill', { 'uid': job.jobuid}) }}" onclick="return window.confirm('Are you sure you want to terminate this job?')">Stop it?</a>)
-  </p>
-
-  {% if job.backURL %}
+    {% if job.hasValidEmail %}
+        <p>An email will be sent to {{ job.email }} upon job completion.</p>
+    {% endif %}
+    
     <p>
-      <a href="{{ job.backURL }}">Click here to launch another job.</a>
+        <img src="{{ asset('bundles/scheduler/images/loader.gif') }}" alt="loading" width=220 height=19 style="vertical-align: middle;" />
     </p>
-  {% endif %}
-  
-  <p class="refresh">Your navigator doesn't support Javascript. <a href="{{ path('_job_status', { 'uid': job.jobuid, '_format': 'html'}) }}">Refresh</a> manually this page to update the job status.</p>
+
+    <p class="jobStatus">
+        Job status: <span class="status">{{ status }}</span> (<a href="{{ path('_job_kill', { 'uid': job.jobuid}) }}" onclick="return window.confirm('Are you sure you want to terminate this job?')">Stop it?</a>)
+    </p>
+
+    {% if job.backURL %}
+        <p>
+            <a href="{{ job.backURL }}">Click here to launch another job.</a>
+        </p>
+    {% endif %}
+
+    <p class="refresh">Your navigator doesn't support Javascript. <a href="{{ path('_job_status', { 'uid': job.jobuid, '_format': 'html'}) }}">Refresh</a> manually this page to update the job status.</p>
 </div>
 
 <script type="text/javascript">
-//<![CDATA[
-jQuery(document).ready(statusTracker('{{ path('_job_status', { 'uid': job.jobuid, '_format': 'js'}) }}'))
-//]]>
+    //<![CDATA[
+    jQuery(document).ready(statusTracker('{{ path('_job_status', { 'uid': job.jobuid, '_format': 'js'}) }}'))
+    //]]>
 </script>
 
 {% endblock %}
