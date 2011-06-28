@@ -6,33 +6,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Genouest\Bundle\SchedulerBundle\Entity\Job;
 
-class DrmaaScheduler implements SchedulerInterface {
-    
-    // Drmaa job state codes
-    const STATE_UNDETERMINED                  =  0; /* process status cannot be determined */
-    const STATE_WAITING                       = 16; /* job is queued and active */
-    const STATE_WAITING_SYSTEM_ON_HOLD        = 17; /* job is queued and in system hold */
-    const STATE_WAITING_USER_ON_HOLD          = 18; /* job is queued and in user hold */
-    const STATE_WAITING_USER_SYSTEM_ON_HOLD   = 19; /* job is queued and in user and system hold */
-    const STATE_RUNNING                       = 32; /* job is running */
-    const STATE_SYSTEM_SUSPENDED              = 33; /* job is system suspended */
-    const STATE_USER_SUSPENDED                = 34; /* job is user suspended */
-    const STATE_USER_SYSTEM_SUSPENDED         = 35; /* job is user and system suspended */
-    const STATE_FINISHED                      = 48; /* job finished normally */
-    const STATE_FAILED                        = 64; /* job finished, but failed */
-    
+class LocalScheduler implements SchedulerInterface {
+
     protected $textJobState = array(
-        self::STATE_UNDETERMINED => 'unknown',
-        self::STATE_WAITING => 'waiting',
-        self::STATE_WAITING_SYSTEM_ON_HOLD => 'waiting',
-        self::STATE_WAITING_USER_ON_HOLD => 'waiting',
-        self::STATE_WAITING_SYSTEM_ON_HOLD => 'waiting',
-        self::STATE_RUNNING => 'running',
-        self::STATE_SYSTEM_SUSPENDED => 'suspended',
-        self::STATE_USER_SUSPENDED => 'suspended',
-        self::STATE_USER_SYSTEM_SUSPENDED => 'suspended',
-        self::STATE_FINISHED => 'finished',
-        self::STATE_FAILED => 'failed',
+        0 => 'running',
+        1 => 'finished',
         );
 
     protected $container;
@@ -54,6 +32,10 @@ class DrmaaScheduler implements SchedulerInterface {
             // Cannot launch the job
             throw new InvalidJobException('Server side problem: no uid or command defined.');
         }
+        
+        // Generated job files
+        $jobFileName = $workDir.$job->getJobUid().".sh";
+        $lockFileName = $workDir.$job->getJobUid().".lock";
         
         // program = generateUid().".sh"
         // write command in program file, add email sending if required
@@ -78,10 +60,10 @@ class DrmaaScheduler implements SchedulerInterface {
                 $fromField .= ' -f \''.$mailAuthorAddress.'\'';
             $script.="echo -e '".str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody()))."' | ".$this->container->getParameter('scheduler.mail_bin')." -s '".str_replace("'", "_", $job->getMailSubject())."' ".$job->getEmail().$fromField."\n";
         }
+        $script .= "rm $lockFileName\n"; // Delete the lock file when the job is finished
         $script .= "\n";
         
         // Create sh script
-        $jobFileName = $workDir.$job->getJobUid().".sh";
         $jobFile = fopen($jobFileName, 'w');
         $fError = $jobFile === false;
         if ($jobFile) {
@@ -95,13 +77,18 @@ class DrmaaScheduler implements SchedulerInterface {
             throw new FileException(sprintf('Could not create file %s (%s)', $jobFileName, strip_tags($error['message'])));
         }
         
-        if ($this->container->hasParameter('scheduler.drmaa_native'))
-            $jobId = qsub($jobFileName, $job->getProgramName(), $this->container->getParameter('scheduler.drmaa_native'));
-        else
-            $jobId = qsub($jobFileName, $job->getProgramName());
+        // Create lock file
+        // Status watching is as follow:
+        // When launching a job, we create a .lock file in work dir. This file is erased when the job is completed.
+        // We could store the PID in the database and use ps to see if it's running, but if the same pid is reused
+        // by another process after the job is finished, we'll think the job is still running while it is already finished.
+        $lockFile = touch($lockFileName, 'w');
+        if ($lockFile === false) {
+            $error = error_get_last();
+            throw new FileException(sprintf('Could not create lock file %s (%s)', $lockFileName, strip_tags($error['message'])));
+        }
         
-        // No need to check if jobid is NULL as if it is, there's a PHP error catched by Symfony
-        $job->setSchedulerJobId($jobId);
+        $jobId = exec("$jobFileName; rm $lockFileName");
         
         return $job;
     }
@@ -113,7 +100,8 @@ class DrmaaScheduler implements SchedulerInterface {
      * @returns int Job status
      */
     public function getStatus(Job $job) {
-        return qstat($job->getSchedulerJobId());
+        $lockFileName = $workDir.$job->getJobUid().".lock";
+        return intval(!file_exists($lockFileName)); // 0 if the job is running, 1 if it is finished
     }
 
     /**
@@ -123,7 +111,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * @returns bool True if the given job has been killed, false otherwise.
      */
     public function kill(Job $job) {
-        return qdel($job->getSchedulerJobId());
+        return false; // No way to kill a job running locally
     }
     
     /**
@@ -135,7 +123,7 @@ class DrmaaScheduler implements SchedulerInterface {
     public function isFinished(Job $job) {
         $status = $this->getStatus($job);
         
-        return (in_array($status, array(self::STATE_UNDETERMINED, self::STATE_FINISHED, self::STATE_FAILED)));
+        return ($status > 0);
     }
   
     /**
@@ -147,13 +135,10 @@ class DrmaaScheduler implements SchedulerInterface {
     public function getStatusAsText($status) {
         if (array_key_exists($status, $this->textJobState)) {
         
-            if ($status === self::STATE_UNDETERMINED)
-                return $this->textJobState[self::STATE_FINISHED]; // Undetermined means finished for drmaa
-            
             return $this->textJobState[$status];
         }
         
-        // Default is 'unknown'
+        // Default is 'running'
         return $this->textJobState[0];
     }
     
@@ -170,21 +155,6 @@ class DrmaaScheduler implements SchedulerInterface {
             mkdir($workDir, 0777, true);
 
         return $workDir;
-    }
-
-    /**
-     * Get the dir accessible by all the machines
-     *
-     * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The temp dir of the given job.
-     */
-    public function getTempDir(Job $job) {
-        $tempDir = $this->addTrailingSlash($this->container->getParameter('scheduler.drmaa_temp_dir')).$job->getProgramName().'/'.$job->getJobUid().'/';
-
-        if (!is_dir($tempDir))
-            mkdir($tempDir, 0777, true);
-
-        return $tempDir;
     }
 
     /**
