@@ -101,7 +101,7 @@ class DrmaaScheduler implements SchedulerInterface {
             $jobId = qsub($jobFileName, $job->getProgramName());
         
         // No need to check if jobid is NULL as if it is, there's a PHP error catched by Symfony
-        $job->setSchedulerJobId($jobId);
+        $job->setSchedulerJobId($jobId); // This must to be set when the job is launched.
         
         return $job;
     }

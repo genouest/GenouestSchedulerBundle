@@ -34,8 +34,6 @@ class LocalScheduler implements SchedulerInterface {
         }
         
         // Generated job files
-        $jobFileName = $workDir.$job->getJobUid().".sh";
-        $lockFileName = $workDir.$job->getJobUid().".lock";
         
         // program = generateUid().".sh"
         // write command in program file, add email sending if required
@@ -60,10 +58,12 @@ class LocalScheduler implements SchedulerInterface {
                 $fromField .= ' -f \''.$mailAuthorAddress.'\'';
             $script.="echo -e '".str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody()))."' | ".$this->container->getParameter('scheduler.mail_bin')." -s '".str_replace("'", "_", $job->getMailSubject())."' ".$job->getEmail().$fromField."\n";
         }
+        $lockFileName = $workDir.$job->getJobUid().".lock";
         $script .= "rm $lockFileName\n"; // Delete the lock file when the job is finished
         $script .= "\n";
         
         // Create sh script
+        $jobFileName = $workDir.$job->getJobUid().".sh";
         $jobFile = fopen($jobFileName, 'w');
         $fError = $jobFile === false;
         if ($jobFile) {
@@ -82,13 +82,15 @@ class LocalScheduler implements SchedulerInterface {
         // When launching a job, we create a .lock file in work dir. This file is erased when the job is completed.
         // We could store the PID in the database and use ps to see if it's running, but if the same pid is reused
         // by another process after the job is finished, we'll think the job is still running while it is already finished.
-        $lockFile = touch($lockFileName, 'w');
+        $lockFile = touch($lockFileName);
         if ($lockFile === false) {
             $error = error_get_last();
             throw new FileException(sprintf('Could not create lock file %s (%s)', $lockFileName, strip_tags($error['message'])));
         }
         
-        $jobId = exec("$jobFileName; rm $lockFileName");
+        exec("nohup $jobFileName > /dev/null 2> /dev/null < /dev/null&"); // FIXME Execute detached
+        
+        $job->setSchedulerJobId($lockFileName); // This must to be set when the job is launched.
         
         return $job;
     }
@@ -100,6 +102,7 @@ class LocalScheduler implements SchedulerInterface {
      * @returns int Job status
      */
     public function getStatus(Job $job) {
+        $workDir = $this->getWorkDir($job);
         $lockFileName = $workDir.$job->getJobUid().".lock";
         return intval(!file_exists($lockFileName)); // 0 if the job is running, 1 if it is finished
     }
@@ -167,10 +170,6 @@ class LocalScheduler implements SchedulerInterface {
         $script = "if [ ! -d ".$this->getWorkDir($job)." ]\n";
         $script .= "then\n";
         $script .= "mkdir -p ".$this->getWorkDir($job)."\n";
-        $script .= "fi\n";
-        $script .= "if [ ! -d ".$this->getTempDir($job)." ]\n";
-        $script .= "then\n";
-        $script .= "mkdir -p ".$this->getTempDir($job)."\n";
         $script .= "fi\n";
         return $script;
     }
