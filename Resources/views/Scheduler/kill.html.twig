@@ -1,0 +1,20 @@
+{% extends "::base.html.twig" %}
+
+{% block content %}
+<div class="jobGeneralInfo">
+    {% if success %}
+        <h3>Job {{ job.title }} has been killed successfully.</h3>
+    {% else %}
+        <h3>Sorry, the job {{ job.title }} could not be killed. If you think it is important to kill this job, you may ask to manually kill this job by sending an email to the administrators of this website, with this reference: {{ uid }}.</h3>
+    {% endif %}
+
+    {% if job.backURL %}
+    <p>
+        <a href="{{ job.backURL }}">Click here to launch another job.</a>
+    </p>
+    {% endif %}
+
+    <p class="refresh">Your navigator doesn't support Javascript. <a href="{{ path('_job_status', { 'uid': job.jobuid, '_format': 'html'}) }}">Refresh</a> manually this page to update the job status.</p>
+</div>
+
+{% endblock %}

@@ -22,6 +22,14 @@ interface SchedulerInterface {
     public function getStatus(Job $job);
     
     /**
+     * Try to kill a job. Depending on the scheduling system, this may not be possible
+     *
+     * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
+     * @returns bool True if the given job has been killed, false otherwise.
+     */
+    public function kill(Job $job);
+    
+    /**
      * Is the given job finished?
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object

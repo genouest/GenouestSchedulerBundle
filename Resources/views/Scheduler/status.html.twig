@@ -9,7 +9,7 @@
   {% endif %}
   
   <p class="jobStatus">
-    Job status: <span class="status">{{ status }}</span>
+    Job status: <span class="status">{{ status }}</span> (<a href="{{ path('_job_kill', { 'uid': job.jobuid}) }}" onclick="return window.confirm('Are you sure you want to terminate this job?')">Stop it?</a>)
   </p>
 
   {% if job.backURL %}

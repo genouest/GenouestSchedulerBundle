@@ -120,6 +120,38 @@ class SchedulerController extends Controller
     }
 
     /**
+     *  Kill a job.
+     *
+     * @Route("/job/kill/{uid}", name = "_job_kill")
+     * @Template()
+     *
+     * @param $uid string The uid of the job to kill
+     */
+    public function jobKillAction($uid) {
+    
+        // Load job from db
+        $scheduler = $this->get('scheduler.method');
+        $jobRepo = $this->get('job.repository');
+        $job = $jobRepo->find($uid);
+        
+        // Check that job is valid
+        if (!$job || !$job->isLaunched())
+            return $this->render('SchedulerBundle:Scheduler:error.html.twig', array('job' => $job, 'uid' => $uid, 'error' => 'Job '.$uid.' is not available.'));
+        
+        $isFinished = $scheduler->isFinished($job);
+        
+        if ($isFinished) {
+            // Job finished (already killed, or finished before accessing this page): simply redirect to result page
+            $resultUrl = $this->generateUrl('_job_results', array('uid' => $job->getJobUid()));
+            return new RedirectResponse($resultUrl);
+        }
+        
+        $success = $scheduler->kill($job);
+        
+        return $this->render('SchedulerBundle:Scheduler:kill.html.twig', array('job' => $job, 'success' => $success));
+    }
+
+    /**
      * Show results
      *
      * @Route("/job/results/{uid}", name = "_job_results")
