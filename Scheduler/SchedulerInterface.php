@@ -38,23 +38,15 @@ interface SchedulerInterface {
     public function getStatusAsText($status);
     
     /**
-     * Get the job specific local dir only visible by the machine running the job
+     * Get the working directory of the job
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The work dir of the given job.
+     * @returns string The working directory of the given job.
      */
     public function getWorkDir(Job $job);
 
     /**
-     * Get the job specific dir accessible by all the machines
-     *
-     * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The result dir of the given job.
-     */
-    public function getResultDir(Job $job);
-
-    /**
-     * Get the url prefix to access a job results (no hostname)
+     * Get the url prefix to access a job results (with or without the hostname)
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
      * @returns string The results url prefix of the given job.

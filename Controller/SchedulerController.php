@@ -21,11 +21,13 @@ class SchedulerController extends Controller
      */
     public function launchJobAction(Job $job) {
     
-        $scheduler = $this->get('job.scheduler');
+        $scheduler = $this->get('scheduler.method');
         $jobRepo = $this->get('job.repository');
         $em = $this->get('scheduler.object_manager');
         
-        $resultUrlPrefix = $this->get('request')->getScheme().'://'.$this->get('request')->getHttpHost().$scheduler->getResultUrl($job);
+        $resultUrlPrefix = $scheduler->getResultUrl($job);
+        if (false === strpos($resultUrlPrefix, '://')) // If no host specified, assume it's the same
+            $resultUrlPrefix = $this->get('request')->getScheme().'://'.$this->get('request')->getHttpHost().$resultUrlPrefix;
         
         // Prepare the mail to be sent when job finished (added to job command line)
         if ($job->hasValidEmail()) {
@@ -77,7 +79,7 @@ class SchedulerController extends Controller
     public function jobStatusAction($uid) {
     
         // Load job from db
-        $scheduler = $this->get('job.scheduler');
+        $scheduler = $this->get('scheduler.method');
         $jobRepo = $this->get('job.repository');
         $job = $jobRepo->find($uid);
         
@@ -125,7 +127,7 @@ class SchedulerController extends Controller
      */
     public function jobResultsAction($uid) {
         // Load job from db
-        $scheduler = $this->get('job.scheduler');
+        $scheduler = $this->get('scheduler.method');
         $jobRepo = $this->get('job.repository');
         $job = $jobRepo->find($uid);
         

@@ -2,6 +2,7 @@
 namespace Genouest\Bundle\SchedulerBundle\Scheduler;
 
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Genouest\Bundle\SchedulerBundle\Entity\Job;
 
@@ -34,19 +35,10 @@ class DrmaaScheduler implements SchedulerInterface {
         self::STATE_FAILED => 'failed',
         );
 
-    protected $sharedDir;
-    protected $workDir;
-    protected $resultUrl;
-    protected $mailBin;
-    protected $mailAuthor;
+    protected $container;
     
-    public function __construct($sharedDir, $workDir, $resultUrl, $mailBin, $mailAuthorName, $mailAuthorAddress) {
-        $this->sharedDir = $this->addTrailingSlash($sharedDir);
-        $this->workDir = $this->addTrailingSlash($workDir);
-        $this->resultUrl = $resultUrl;
-        $this->mailBin = $mailBin;
-        $this->mailAuthorName = $mailAuthorName;
-        $this->mailAuthorAddress = $mailAuthorAddress;
+    public function __construct(ContainerInterface $container) {
+        $this->container = $container;
     }
 
     /**
@@ -66,27 +58,29 @@ class DrmaaScheduler implements SchedulerInterface {
         // program = generateUid().".sh"
         // write command in program file, add email sending if required
         // Run the script and return jobUid
-        $resultDir = $this->getResultDir($job);
+        $workDir = $this->getWorkDir($job);
         $script = "#!/bin/bash\n";
-        $script .= "exec 3>".$resultDir."stdout.txt\n";
-        $script .= "exec 4>".$resultDir."stderr.txt\n";
+        $script .= "exec 3>".$workDir."stdout.txt\n";
+        $script .= "exec 4>".$workDir."stderr.txt\n";
         $script .= "(\n";
         $script .= $this->checkDirectoryScript($job);
         $script .= $job->getCommand()."\n";
         $script .= ") 1>&3 2>&4\n";
         if ($job->hasValidEmail()) {
             $fromField = '';
-            if (!empty($this->mailAuthorName) || !empty($this->mailAuthorAddress))
+            $mailAuthorName = $this->container->getParameter('scheduler.mail_author_name');
+            $mailAuthorAddress = $this->container->getParameter('scheduler.mail_author_address');
+            if (!empty($mailAuthorName) || !empty($mailAuthorAddress))
                 $fromField = ' -- ';
-            if (!empty($this->mailAuthorName))
-                $fromField .= ' -F \''.$this->mailAuthorName.'\'';
-            if (!empty($this->mailAuthorAddress))
-                $fromField .= ' -f \''.$this->mailAuthorAddress.'\'';
-            $script.="echo -e '".str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody()))."' | ".$this->mailBin." -s '".str_replace("'", "_", $job->getMailSubject())."' ".$job->getEmail().$fromField."\n";
+            if (!empty($mailAuthorName))
+                $fromField .= ' -F \''.$mailAuthorName.'\'';
+            if (!empty($mailAuthorAddress))
+                $fromField .= ' -f \''.$mailAuthorAddress.'\'';
+            $script.="echo -e '".str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody()))."' | ".$this->container->getParameter('scheduler.mail_bin')." -s '".str_replace("'", "_", $job->getMailSubject())."' ".$job->getEmail().$fromField."\n";
         }
         $script .= "\n";
         
-        $jobFileName = $resultDir.$job->getJobUid().".sh";
+        $jobFileName = $workDir.$job->getJobUid().".sh";
         $jobFile = fopen($jobFileName, 'w');
         $fError = $jobFile === false;
         if ($jobFile) {
@@ -97,10 +91,15 @@ class DrmaaScheduler implements SchedulerInterface {
 
         if ($fError) {
             $error = error_get_last();
-            throw new FileException(sprintf('Could not create file %s (%s)', $resultDir.$job->getJobUid().".sh", strip_tags($error['message'])));
+            throw new FileException(sprintf('Could not create file %s (%s)', $workDir.$job->getJobUid().".sh", strip_tags($error['message'])));
         }
         
-        $jobId = qsub($jobFileName, $job->getProgramName()); // No need to check if NULL as if it is, there's a PHP error catched by Symfony
+        if ($this->container->hasParameter('scheduler.drmaa_native'))
+            $jobId = qsub($jobFileName, $job->getProgramName(), $this->container->getParameter('scheduler.drmaa_native'));
+        else
+            $jobId = qsub($jobFileName, $job->getProgramName());
+        
+        // No need to check if jobid is NULL as if it is, there's a PHP error catched by Symfony
         $job->setSchedulerJobId($jobId);
         
         return $job;
@@ -148,13 +147,13 @@ class DrmaaScheduler implements SchedulerInterface {
     }
     
     /**
-     * Get the local dir only visible by the machine running the job
+     * Get the working directory of the job
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
      * @returns string The work dir of the given job.
      */
     public function getWorkDir(Job $job) {
-        $workDir = $this->workDir.$job->getProgramName().'/'.$job->getJobUid().'/';
+        $workDir = $this->addTrailingSlash($this->container->getParameter('scheduler.work_dir')).$job->getProgramName().'/'.$job->getJobUid().'/';
 
         if (!is_dir($workDir))
             mkdir($workDir, 0777, true);
@@ -166,15 +165,15 @@ class DrmaaScheduler implements SchedulerInterface {
      * Get the dir accessible by all the machines
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The result dir of the given job.
+     * @returns string The temp dir of the given job.
      */
-    public function getResultDir(Job $job) {
-        $resultDir = $this->sharedDir.$job->getProgramName().'/'.$job->getJobUid().'/';
+    public function getTempDir(Job $job) {
+        $tempDir = $this->addTrailingSlash($this->container->getParameter('scheduler.drmaa_temp_dir')).$job->getProgramName().'/'.$job->getJobUid().'/';
 
-        if (!is_dir($resultDir))
-            mkdir($resultDir, 0777, true);
+        if (!is_dir($tempDir))
+            mkdir($tempDir, 0777, true);
 
-        return $resultDir;
+        return $tempDir;
     }
     
 
@@ -189,9 +188,9 @@ class DrmaaScheduler implements SchedulerInterface {
         $script .= "then\n";
         $script .= "mkdir -p ".$this->getWorkDir($job)."\n";
         $script .= "fi\n";
-        $script .= "if [ ! -d ".$this->getResultDir($job)." ]\n";
+        $script .= "if [ ! -d ".$this->getTempDir($job)." ]\n";
         $script .= "then\n";
-        $script .= "mkdir -p ".$this->getResultDir($job)."\n";
+        $script .= "mkdir -p ".$this->getTempDir($job)."\n";
         $script .= "fi\n";
         return $script;
     }
@@ -217,7 +216,7 @@ class DrmaaScheduler implements SchedulerInterface {
      */
     public function getResultUrl(Job $job) {
         
-        return $this->resultUrl.$job->getProgramName().'/'.$job->getJobUid().'/';
+        return $this->container->getParameter('scheduler.result_url').$job->getProgramName().'/'.$job->getJobUid().'/';
     }
 
 }

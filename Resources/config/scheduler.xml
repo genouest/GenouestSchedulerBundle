@@ -4,19 +4,21 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <parameters>
+        <!-- Scheduler classes -->
+        <parameter key="scheduler.method.drmaa.class">Genouest\Bundle\SchedulerBundle\Scheduler\DrmaaScheduler</parameter>
+        <parameter key="scheduler.method.local.class">Genouest\Bundle\SchedulerBundle\Scheduler\LocalScheduler</parameter>
+    </parameters>
+    
     <services>
-        <service id="job.repository" class="Genouest\Bundle\SchedulerBundle\Entity\JobRepository" factory-service="scheduler.object_manager" factory-method="getRepository">
-            <argument type="string">Genouest\Bundle\SchedulerBundle\Entity\Job</argument>
+        <!-- Schedulers -->
+        <service id="scheduler.method" class="%scheduler.method.class%">
+			<argument type="service" id="service_container" />
         </service>
         
-        <service id="job.scheduler" class="Genouest\Bundle\SchedulerBundle\Scheduler\SchedulerInterface" factory-class="Genouest\Bundle\SchedulerBundle\Scheduler\SchedulerFactory" factory-method="getScheduler">
-            <argument type="string">drmaa</argument>
-            <argument type="string">%genouest.scheduler.shared_dir%</argument>
-            <argument type="string">%genouest.scheduler.work_dir%</argument>
-            <argument type="string">%genouest.scheduler.result_url%</argument>
-            <argument type="string">%genouest.scheduler.mail_bin%</argument>
-            <argument type="string">%genouest.scheduler.mail_author_name%</argument>
-            <argument type="string">%genouest.scheduler.mail_author_address%</argument>
+        
+        <service id="job.repository" class="Genouest\Bundle\SchedulerBundle\Entity\JobRepository" factory-service="scheduler.object_manager" factory-method="getRepository">
+            <argument>Genouest\Bundle\SchedulerBundle\Entity\Job</argument>
         </service>
         
         <!-- Object Manager Service -->
