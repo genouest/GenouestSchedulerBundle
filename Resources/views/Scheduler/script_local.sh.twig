@@ -1,0 +1,21 @@
+{% autoescape false %}
+#!/bin/bash
+exec 3> {{ workDir }}stdout.txt
+exec 4> {{ workDir }}stderr.txt
+(
+    if [ ! -d {{ workDir }} ]
+    then
+        mkdir -p {{ workDir }}
+    fi
+    {{ job.command }}
+) 1>&3 2>&4
+
+{% if job.hasValidEmail %}
+
+echo -e '{{ mailBody }}' | {{ mailBin }} -s '{{ mailSubject }}' {{ job.email }} {% if mailAuthorName or mailAuthorAddress %} -- {% endif %}{% if mailAuthorName %} -F '{{ mailAuthorName }}'{% endif %}{% if mailAuthorAddress %} -f '{{ mailAuthorAddress }}'{% endif %}
+
+{% endif %}
+
+rm {{ lockFileName }}
+{% endautoescape %}
+

@@ -59,26 +59,15 @@ class DrmaaScheduler implements SchedulerInterface {
         // write command in program file, add email sending if required
         // Run the script and return jobUid
         $workDir = $this->getWorkDir($job);
-        $script = "#!/bin/bash\n";
-        $script .= "exec 3>".$workDir."stdout.txt\n";
-        $script .= "exec 4>".$workDir."stderr.txt\n";
-        $script .= "(\n";
-        $script .= $this->checkDirectoryScript($job);
-        $script .= $job->getCommand()."\n";
-        $script .= ") 1>&3 2>&4\n";
-        if ($job->hasValidEmail()) {
-            $fromField = '';
-            $mailAuthorName = $this->container->getParameter('scheduler.mail_author_name');
-            $mailAuthorAddress = $this->container->getParameter('scheduler.mail_author_address');
-            if (!empty($mailAuthorName) || !empty($mailAuthorAddress))
-                $fromField = ' -- ';
-            if (!empty($mailAuthorName))
-                $fromField .= ' -F \''.$mailAuthorName.'\'';
-            if (!empty($mailAuthorAddress))
-                $fromField .= ' -f \''.$mailAuthorAddress.'\'';
-            $script.="echo -e '".str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody()))."' | ".$this->container->getParameter('scheduler.mail_bin')." -s '".str_replace("'", "_", $job->getMailSubject())."' ".$job->getEmail().$fromField."\n";
-        }
-        $script .= "\n";
+        $script = $this->container->get('templating')->render('SchedulerBundle:Scheduler:script_drmaa.sh.twig', array('job' => $job,
+            'workDir' => $workDir,
+            'tempDir' => $this->getTempDir($job),
+            'mailBody' => str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody())),
+            'mailBin' => $this->container->getParameter('scheduler.mail_bin'),
+            'mailSubject' => str_replace("'", "_", $job->getMailSubject()),
+            'mailAuthorName' => $this->container->getParameter('scheduler.mail_author_name'),
+            'mailAuthorAddress' => $this->container->getParameter('scheduler.mail_author_address'),
+            ));
         
         // Create sh script
         $jobFileName = $workDir.$job->getJobUid().".sh";
@@ -185,24 +174,6 @@ class DrmaaScheduler implements SchedulerInterface {
             mkdir($tempDir, 0777, true);
 
         return $tempDir;
-    }
-
-    /**
-     * Generate shell script to check directory existence.
-     *
-     * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string Shell script to check directory existence
-     */
-    protected function checkDirectoryScript(Job $job) {
-        $script = "if [ ! -d ".$this->getWorkDir($job)." ]\n";
-        $script .= "then\n";
-        $script .= "mkdir -p ".$this->getWorkDir($job)."\n";
-        $script .= "fi\n";
-        $script .= "if [ ! -d ".$this->getTempDir($job)." ]\n";
-        $script .= "then\n";
-        $script .= "mkdir -p ".$this->getTempDir($job)."\n";
-        $script .= "fi\n";
-        return $script;
     }
     
     /**
