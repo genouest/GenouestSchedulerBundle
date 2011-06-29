@@ -49,7 +49,16 @@ Make sure that you also register the namespaces with the autoloader::
         // ...
         'Genouest\\Bundle' => __DIR__.'/../vendor/bundles',
         // ...
-    ));    
+    ));
+
+Finally, import the routes defined in the bundle::
+
+    // app/config/routing.yml
+    // ...
+    _scheduler:
+        resource: "@GenouestSchedulerBundle/Controller/SchedulerController.php"
+        type: annotation
+    // ...
 
 
 Configuration
