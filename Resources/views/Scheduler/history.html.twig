@@ -1,13 +1,45 @@
-{% extends "SchedulerBundle:Scheduler:layout.html.twig" %}
+{#
+/*
+ * Copyright 2011 Anthony Bretaudeau <abretaud@irisa.fr>
+ *
+ * Licensed under the CeCILL License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+ *
+ */
+#}
+
+{% extends "GenouestSchedulerBundle:Scheduler:layout.html.twig" %}
 
 {% block scheduler %}
 <div class="jobGeneralInfo">
     <h3>Recent jobs</h3>
 
+    {% if jobs %}
     <ul class="history">
         {% for job in jobs %}
-            <li>{{ job.uid }}<span class=\"status\"></span></li>
+            <li>
+                {% if scheduler.isFinished(job) %}
+                    <img src="{{ asset('bundles/genouestscheduler/images/tick.png') }}" alt="Job finished" width=16 height=16 style="vertical-align:middle" />
+                {% else %}
+                    <img src="{{ asset('bundles/genouestscheduler/images/loader_small.gif') }}" alt="Job finished" width=16 height=16 style="vertical-align:middle" />
+                {% endif %}
+                {% if job.title %}
+                    <a href="{{ path('_job_status', { 'uid': job.jobuid, '_format': 'html'}) }}">{{ job.title }}</a> {{ job.programName }} job
+                {% else %}
+                    <a href="{{ path('_job_status', { 'uid': job.jobuid, '_format': 'html'}) }}">{{ job.programName }} job</a>
+                {% endif %}
+                ({{ job.createdAt|date('m/d/Y G:i:s') }})
+                {% if not scheduler.isFinished(job) %}
+                    <a href="{{ path('_job_kill', { 'uid': job.jobuid}) }}" onclick="return window.confirm('Are you sure you want to terminate this job?')"><img src="{{ asset('bundles/genouestscheduler/images/kill.png') }}" alt="Kill the job" width=16 height=16 style="vertical-align:middle" /></a>
+                {% endif %}
+            </li>
         {% endfor %}
     </ul>
+    {% else %}
+        <p>Sorry, no jobs where found. Check that you are logged in before accessing this page.</p>
+    {% endif %}
 </div>
 {% endblock %}

@@ -1,4 +1,16 @@
 <?php
+
+/*
+ * Copyright 2011 Anthony Bretaudeau <abretaud@irisa.fr>
+ *
+ * Licensed under the CeCILL License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+ *
+ */
+
 namespace Genouest\Bundle\SchedulerBundle\Scheduler;
 
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -59,7 +71,7 @@ class DrmaaScheduler implements SchedulerInterface {
         // write command in program file, add email sending if required
         // Run the script and return jobUid
         $workDir = $this->getWorkDir($job);
-        $script = $this->container->get('templating')->render('SchedulerBundle:Scheduler:script_drmaa.sh.twig', array('job' => $job,
+        $script = $this->container->get('templating')->render('GenouestSchedulerBundle:Scheduler:script_drmaa.sh.twig', array('job' => $job,
             'workDir' => $workDir,
             'tempDir' => $this->getTempDir($job),
             'mailBody' => str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody())),

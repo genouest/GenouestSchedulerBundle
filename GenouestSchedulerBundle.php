@@ -4,6 +4,6 @@ namespace Genouest\Bundle\SchedulerBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class SchedulerBundle extends Bundle
+class GenouestSchedulerBundle extends Bundle
 {
 }

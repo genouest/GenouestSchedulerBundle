@@ -1,11 +1,24 @@
+{#
+/*
+ * Copyright 2011 Anthony Bretaudeau <abretaud@irisa.fr>
+ *
+ * Licensed under the CeCILL License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt
+ *
+ */
+#}
+
 <!DOCTYPE html>
 <html>
     <head>
         <title>{% block title %}Job_scheduler{% endblock %}</title>
         
-        <script type="text/javascript" src="{{ asset('bundles/scheduler/js/jquery-1.6.1.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('bundles/scheduler/js/scheduler.js') }}"></script>
-        <link href="{{ asset('bundles/scheduler/css/scheduler.css') }}" rel="stylesheet" type="text/css" media="screen" />
+        <script type="text/javascript" src="{{ asset('bundles/genouestscheduler/js/jquery-1.6.1.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/genouestscheduler/js/scheduler.js') }}"></script>
+        <link href="{{ asset('bundles/genouestscheduler/css/scheduler.css') }}" rel="stylesheet" type="text/css" media="screen" />
 
         {% block head %}{% endblock %}
     </head>
@@ -16,7 +29,7 @@
                     <li>
                         <a href="{{ path('_welcome') }}" title="Homepage">Homepage</a>
                     </li>
-                    <li class="right">
+                    <li>
                         <a title="Access to all your previous results" href="{{ path('_job_history') }}">My jobs</a>
                     </li>
                 {% endblock %}
