@@ -9,11 +9,14 @@
 
   <xsd:complexType name="config">
     <xsd:all>
-      <xsd:element name="shared_dir" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="work_dir" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="result_url" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="mail_bin" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="mail_author_name" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="mail_author_address" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="method" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="work_dir" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="result_url" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="mail_bin" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="mail_author_name" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="mail_author_address" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="drmaa_temp_dir" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="drmaa_native" type="xsd:string" minOccurs="0" maxOccurs="1" />
     </xsd:all>
 </xsd:schema>
+
