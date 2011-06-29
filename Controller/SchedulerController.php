@@ -207,7 +207,7 @@ class SchedulerController extends Controller
         
         // Try to find the jobs of current user, if he is authenticated and not anonymous
         if ($this->get('security.context')->getToken() && $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY'))
-            $jobs = $jobRepo->getJobsForUser($this->get('security.context')->getToken()->getUsername());
+            $jobs = $jobRepo->getJobsForUser($this->get('security.context')->getToken()->getUsername(), $this->container->getParameter('scheduler.history_length'));
         
         return $this->render('GenouestSchedulerBundle:Scheduler:history.html.twig', array('jobs' => $jobs, 'scheduler' => $scheduler));
     }

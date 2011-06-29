@@ -22,10 +22,11 @@ class JobRepository extends EntityRepository
      * Get all jobs for a given user ID.
      *
      * @param $user_id The user ID.
+     * @param $days Return the jobs launched during the last xx number of days
      * @returns array An array of Genouest\Bundle\SchedulerBundle\Entity\Job
      */
-    public function getJobsForUser($user_id) {
-        $date = date('Y-m-d', strtotime("-8 day"));
+    public function getJobsForUser($user_id, $days) {
+        $date = date('Y-m-d', strtotime("-".intval($days)." day"));
         
         $qb = $this->createQueryBuilder('Job');
         $qb->select('j')

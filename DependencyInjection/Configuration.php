@@ -40,6 +40,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('mail_bin')->isRequired()->end()
                 ->scalarNode('mail_author_name')->isRequired()->end()
                 ->scalarNode('mail_author_address')->isRequired()->end()
+                ->scalarNode('history_length')->isRequired()->end()
                 ->scalarNode('drmaa_temp_dir')->end() // This one is only used by drmaa
                 ->scalarNode('drmaa_native')->end() // This one is only used by drmaa
             ->end()

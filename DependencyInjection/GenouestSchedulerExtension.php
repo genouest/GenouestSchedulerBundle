@@ -60,6 +60,8 @@ class GenouestSchedulerExtension extends Extension
         $container->setParameter('scheduler.mail_author_address', $config['mail_author_address']);
         
         
+        $container->setParameter('scheduler.history_length', $config['history_length']);
+        
         // drmaa specific options
         $container->setParameter('scheduler.drmaa_temp_dir', $config['work_dir']); // Default temp dir is work dir
         if (isset($config['drmaa_temp_dir'])) {
