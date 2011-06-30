@@ -54,10 +54,7 @@ class GenouestSchedulerExtension extends Extension
         $container->setParameter('scheduler.mail_bin', $config['mail_bin']);
         
         
-        $container->setParameter('scheduler.mail_author_name', $config['mail_author_name']);
-        
-        
-        $container->setParameter('scheduler.mail_author_address', $config['mail_author_address']);
+        $container->setParameter('scheduler.from_email', array_slice($config['from_email'], 0, 1)); // Only the first address will be used
         
         
         $container->setParameter('scheduler.history_length', $config['history_length']);

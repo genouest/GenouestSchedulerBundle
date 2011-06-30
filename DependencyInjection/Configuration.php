@@ -38,8 +38,11 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('work_dir')->isRequired()->end()
                 ->scalarNode('result_url')->isRequired()->end()
                 ->scalarNode('mail_bin')->isRequired()->end()
-                ->scalarNode('mail_author_name')->isRequired()->end()
-                ->scalarNode('mail_author_address')->isRequired()->end()
+                ->arrayNode('from_email')
+                    ->useAttributeAsKey('address')
+                    ->prototype('scalar')->end()
+                    ->defaultValue(array('webmaster@example.com' => 'webmaster'))
+                ->end()
                 ->scalarNode('history_length')->isRequired()->end()
                 ->scalarNode('drmaa_temp_dir')->end() // This one is only used by drmaa
                 ->scalarNode('drmaa_native')->end() // This one is only used by drmaa

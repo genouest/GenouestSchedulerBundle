@@ -89,11 +89,8 @@ The following configuration keys are available::
         # This binary must be available on the cluster nodes.
         mail_bin:             "/bin/mail"
         
-        # The sender name when sending emails to users
-        mail_author_name:     "Example support team"
-        
-        # The sender address used when sending emails to users
-        mail_author_address:  "support@example.org"
+        # The sender when sending emails to users
+        from_email:           {"webmaster@example.org": "webmaster"}
         
         # In the history, only display jobs launched within the xx last days
         history_length:       8
@@ -106,6 +103,9 @@ The following configuration keys are available::
         # Default: the same as work_dir
         # Only used by drmaa scheduler
         drmaa_temp_dir:       "/some/other/tmp/dir/"
+
+Please note that if you change the scheduling method (drmaa/local/other), the old jobs that were launched with the
+previous settings won't be accessible anymore (status or results page).
 
 Usage
 -----

@@ -71,14 +71,14 @@ class DrmaaScheduler implements SchedulerInterface {
         // write command in program file, add email sending if required
         // Run the script and return jobUid
         $workDir = $this->getWorkDir($job);
+        
         $script = $this->container->get('templating')->render('GenouestSchedulerBundle:Scheduler:script_drmaa.sh.twig', array('job' => $job,
             'workDir' => $workDir,
             'tempDir' => $this->getTempDir($job),
             'mailBody' => str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody())),
             'mailBin' => $this->container->getParameter('scheduler.mail_bin'),
             'mailSubject' => str_replace("'", "_", $job->getMailSubject()),
-            'mailAuthorName' => $this->container->getParameter('scheduler.mail_author_name'),
-            'mailAuthorAddress' => $this->container->getParameter('scheduler.mail_author_address'),
+            'fromEmail' => $this->container->getParameter('scheduler.from_email'),
             ));
         
         // Create sh script

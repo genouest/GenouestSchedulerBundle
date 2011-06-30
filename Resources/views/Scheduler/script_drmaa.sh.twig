@@ -29,7 +29,7 @@ exec 4> {{ workDir }}stderr.txt
 
 {% if job.hasValidEmail %}
 
-echo -e '{{ mailBody }}' | {{ mailBin }} -s '{{ mailSubject }}' {{ job.email }} {% if mailAuthorName or mailAuthorAddress %} -- {% endif %}{% if mailAuthorName %} -F '{{ mailAuthorName }}'{% endif %}{% if mailAuthorAddress %} -f '{{ mailAuthorAddress }}'{% endif %}
+echo -e '{{ mailBody }}' | {{ mailBin }} -s '{{ mailSubject }}' {{ job.email }} {% if fromEmail %} -- {% for address, name in fromEmail %} -F '{{ name }}' -f '{{ address }}'{% endfor %}{% endif %}
 
 {% endif %}
 {% endautoescape %}

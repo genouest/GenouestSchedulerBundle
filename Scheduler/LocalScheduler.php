@@ -58,8 +58,7 @@ class LocalScheduler implements SchedulerInterface {
             'mailBody' => str_replace("\n","\\n",str_replace("'", "_", $job->getMailBody())),
             'mailBin' => $this->container->getParameter('scheduler.mail_bin'),
             'mailSubject' => str_replace("'", "_", $job->getMailSubject()),
-            'mailAuthorName' => $this->container->getParameter('scheduler.mail_author_name'),
-            'mailAuthorAddress' => $this->container->getParameter('scheduler.mail_author_address'),
+            'fromEmail' => $this->container->getParameter('scheduler.from_email'),
             ));
         
         // Create sh script
