@@ -13,7 +13,7 @@
     <services>
         <!-- Schedulers -->
         <service id="scheduler.scheduler" class="%scheduler.method.class%">
-			<argument type="service" id="service_container" />
+            <argument type="service" id="service_container" />
         </service>
         
         
