@@ -88,7 +88,7 @@ class LocalScheduler implements SchedulerInterface {
             throw new FileException(sprintf('Could not create lock file %s (%s)', $lockFileName, strip_tags($error['message'])));
         }
         
-        exec("nohup $jobFileName > /dev/null 2> /dev/null < /dev/null&"); // FIXME Execute detached
+        exec("nohup $jobFileName > /dev/null 2> /dev/null < /dev/null&");
         
         $job->setSchedulerJobId($lockFileName); // This must to be set when the job is launched.
         
