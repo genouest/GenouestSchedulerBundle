@@ -16,10 +16,11 @@ namespace Genouest\Bundle\SchedulerBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Genouest\Bundle\SchedulerBundle\Entity\Job;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
+use Genouest\Bundle\SchedulerBundle\Exception\InvalidJobException;
+use Genouest\Bundle\SchedulerBundle\Entity\Job;
 
 class SchedulerController extends Controller
 {

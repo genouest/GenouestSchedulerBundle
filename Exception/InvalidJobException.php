@@ -11,7 +11,7 @@
  *
  */
 
-namespace Bundle\SchedulerBundle\Exception;
+namespace Genouest\Bundle\SchedulerBundle\Exception;
 
 class InvalidJobException extends \RuntimeException
 {

@@ -16,6 +16,7 @@ namespace Genouest\Bundle\SchedulerBundle\Scheduler;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use Genouest\Bundle\SchedulerBundle\Exception\InvalidJobException;
 use Genouest\Bundle\SchedulerBundle\Entity\Job;
 
 class LocalScheduler implements SchedulerInterface {
