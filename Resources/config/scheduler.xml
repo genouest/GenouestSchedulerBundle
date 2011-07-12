@@ -17,7 +17,7 @@
         </service>
         
         
-        <service id="job.repository" class="Genouest\Bundle\SchedulerBundle\Entity\JobRepository" factory-service="scheduler.object_manager" factory-method="getRepository">
+        <service id="job.repository" class="Genouest\Bundle\SchedulerBundle\Entity\JobRepository" factory-service="scheduler.entity_manager" factory-method="getRepository">
             <argument>Genouest\Bundle\SchedulerBundle\Entity\Job</argument>
         </service>
         
