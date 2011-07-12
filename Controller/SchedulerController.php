@@ -35,7 +35,7 @@ class SchedulerController extends Controller
     
         $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
-        $em = $this->get('scheduler.object_manager');
+        $em = $this->get('scheduler.entity_manager');
         
         $resultUrlPrefix = $scheduler->getResultUrl($job);
         if (false === strpos($resultUrlPrefix, '://')) // If no host specified, assume it's the same

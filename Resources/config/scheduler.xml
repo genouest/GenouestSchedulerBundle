@@ -21,8 +21,8 @@
             <argument>Genouest\Bundle\SchedulerBundle\Entity\Job</argument>
         </service>
         
-        <!-- Object Manager Service -->
-        <service id="scheduler.object_manager" alias="doctrine.orm.entity_manager" />
+        <!-- Entity Manager Service -->
+        <service id="scheduler.entity_manager" alias="doctrine.orm.entity_manager" />
     </services>
 
 </container>

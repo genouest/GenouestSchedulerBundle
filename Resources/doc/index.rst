@@ -11,6 +11,7 @@ It is also possible to extend it to other scheduling system.
 
 How does it work?
 -----------------
+
 The bundle provide some basic actions and associated basic templates to submit a job,
 query its status (running, finished), kill it if needed, display the results, and see the history
 of all the jobs a user has run.
@@ -23,6 +24,7 @@ To submit jobs to a SGE cluster, you need to install a dedicated PHP extension (
 .. _installation-label:
 Installation
 ------------
+
 To us the Drmaa scheduler, you need to install the php4drm PHP extension (https://gforge.inria.fr/projects/php4drm). Download the source code from::
 
     https://gforge.inria.fr/frs/?group_id=1835
@@ -64,7 +66,8 @@ Finally, import the routes defined in the bundle::
 Configuration
 -------------
 
-You need to have a properly configured doctrine orm.
+You need to have a properly configured doctrine orm. By default, the scheduler will use the default entity_manager.
+See below if you want to use a specific doctrine entity_manager
 
 The following configuration keys are available::
 
@@ -192,4 +195,51 @@ This is the list of templates that you can customize, with their description::
     GenouestSchedulerBundle:Scheduler:script_drmaa.sh.twig -> Bash script template used by the drmaa scheduler to launch the job command and send email if needed
     GenouestSchedulerBundle:Scheduler:script_local.sh.twig -> Bash script template used by the local scheduler to launch the job command and send email if needed
 
+Using a specific Doctrine entity_manager
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to use a specific entity_manager, you need to override a service definition. At the end of config.yml, add the following lines:
+
+    services:
+        scheduler.entity_manager:
+            alias: doctrine.orm.XX_entity_manager
+
+Replace 'doctrine.orm.XX_entity_manager' by the service id of the correct entity manager.
+This is an example of doctrine configuration with 2 entity managers, each one managing entities in a different database:
+
+    # Doctrine Configuration
+    doctrine:
+        dbal:
+            default_connection:     foo
+            connections:
+                foo:
+                    driver:   %database_driver%
+                    host:     %database_host%
+                    dbname:   %database_name%
+                    user:     %database_user%
+                    password: %database_password%
+                scheduler:
+                    driver:   %database_driver_scheduler%
+                    host:     %database_host_scheduler%
+                    dbname:   %database_name_scheduler%
+                    user:     %database_user_scheduler%
+                    password: %database_password_scheduler%
+
+        orm:
+            default_entity_manager:   default
+            entity_managers:
+                default:
+                    connection:       foo
+                    mappings:
+                        FooBundle: ~
+                scheduler: # Replace XX by that
+                    connection:       scheduler
+                    mappings:
+                        GenouestSchedulerBundle: ~
+
+To make the GenouestSchedulerBundle use the correct entity manager, you need to define the service like this:
+
+    services:
+        scheduler.entity_manager:
+            alias: doctrine.orm.scheduler_entity_manager
 
