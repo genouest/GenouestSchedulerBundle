@@ -59,6 +59,7 @@ Finally, import the routes defined in the bundle::
     // ...
     _scheduler:
         resource: "@GenouestSchedulerBundle/Controller/SchedulerController.php"
+        prefix: /scheduler
         type: annotation
     // ...
 
