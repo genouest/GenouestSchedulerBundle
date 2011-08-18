@@ -73,7 +73,7 @@ class SchedulerController extends Controller
             $em->persist($job);
             $em->flush();
             
-            return $this->render('GenouestSchedulerBundle:Scheduler:error.html.twig', array('job' => $job, 'error' => $e->getMessage()));
+            return $this->render('GenouestSchedulerBundle:Scheduler:error.html.twig', array('job' => $job, 'uid' => $job->getJobUid(), 'error' => $e->getMessage()));
         }
         
         // Save the job
