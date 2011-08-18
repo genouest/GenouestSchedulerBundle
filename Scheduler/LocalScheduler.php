@@ -43,7 +43,7 @@ class LocalScheduler implements SchedulerInterface {
         
         if (!$job->canBeLaunched()) {
             // Cannot launch the job
-            throw new InvalidJobException('Server side problem: no uid or command defined.');
+            throw new InvalidJobException('Server side problem: the job cannot be launched.');
         }
         
         // Generated job files
