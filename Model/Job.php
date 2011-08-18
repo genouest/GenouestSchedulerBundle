@@ -151,4 +151,19 @@ abstract class Job {
     public function getMailBody() {
         return $this->mailBody;
     }
+    
+    /**
+     * Reset the job to the state just before it was launched
+     *
+     * @returns bool True if the job was resetted successfully, false otherwise
+     */
+    public function reset() {
+        
+        if (!$this->isValid())
+            return false;
+
+        $this->schedulerJobId = null;
+        
+        return true;
+    }
 }
