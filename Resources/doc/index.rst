@@ -248,3 +248,76 @@ To make the GenouestSchedulerBundle use the correct entity manager, you need to 
         scheduler.entity_manager:
             alias: doctrine.orm.scheduler_entity_manager
 
+Overriding some SchedulerBundle routes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Suppose you want to customize what is done by the SchedulerBundler when displaying the results (or status, ...)
+of a job. The simplest is to create a route in one of your application bundle with the same name as in the the
+SchedulerBundle.
+
+    /**
+     * Show results. Override Scheduler template to show more information.
+     *
+     * @Route("/job/results/{uid}", name = "_job_results")
+     * @Template()
+     */
+    public function jobResultsAction($uid) {
+        //.... do something...
+    }
+
+The only thing to do to make it work now is to be sure this route is loaded *before* the one in the SchedulerBundle.
+So in routing.yml, check that this overriden route appears *before* the SchedulerBundle routes import:
+
+    _mybundle:
+        resource: "@MyBundle/Controller/MyController.php"
+        type: annotation
+
+    _scheduler:
+        resource: "@GenouestSchedulerBundle/Controller/SchedulerController.php"
+        type: annotation
+
+This works perfectly if you only override this route once. Suppose you have developped two bundles for your application,
+each one submitting jobs using the SchedulerBundle, and each one having a customized "_job_results" route.
+In this case, the technique above can't work because everytime the "_job_results" route will be used, it will be the one
+defined the first in the routing.yml.
+One solution to this problem is to create a proxy "_job_results" route that will look at the job uid and redirect to the
+correct route.
+First, ensure you call Job::setProgramName() with different values in each one of your two bundles.
+Then create the proxy action in one of your controllers:
+
+    /**
+     * Show results. Override Scheduler template to show more information.
+     * Forward to the correct overriden page depending on the job uid
+     *
+     * @Route("/job/results/{uid}", name = "_job_results")
+     * @Template()
+     */
+    public function jobResultsAction($uid) {
+
+        if (substr($uid, 0, mb_strlen('myProgram')) == 'myProgram')
+            $response = $this->forward('MyBundle::jobResults', array(
+                'uid'  => $uid
+            ));
+        else if (substr($uid, 0, mb_strlen('myOtherProgram')) == 'myOtherProgram')
+            $response = $this->forward('MyOtherBundle::jobResults', array(
+                'uid'  => $uid
+            ));
+        
+        return $response;
+    }
+
+Finally make sure the controller where you wrote this code is loaded before the other ones in routing.yml:
+
+    _myproxybundle:
+        resource: "@MyProxyBundle/Controller/MyproxyController.php"
+        type: annotation
+    _mybundle:
+        resource: "@MyBundle/Controller/MyController.php"
+        type: annotation
+    _myotherbundle:
+        resource: "@MyOtherBundle/Controller/MyOtherController.php"
+        type: annotation
+    _scheduler:
+        resource: "@GenouestSchedulerBundle/Controller/SchedulerController.php"
+        type: annotation
+
