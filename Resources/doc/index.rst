@@ -23,6 +23,8 @@ Installation
 
 To use the Drmaa scheduler, you need to install the php4drm PHP extension (https://gforge.inria.fr/projects/php4drm). Download the source code (drmPhpExtension_xx.tar.gz) from:
 
+.. code-block:: text
+
     https://gforge.inria.fr/frs/?group_id=1835
 
 Install it, following the instructions in the README file.
