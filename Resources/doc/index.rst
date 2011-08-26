@@ -1,13 +1,11 @@
-========
 Overview
 ========
 
 This bundle allows you to launch command lines on a cluster.
 
-It was designed to support submission of jobs to SGE (Sun Grid Engine) clusters,
-using a php-drmaa binding.
+It was designed to support submission of jobs to SGE (Sun Grid Engine) clusters, using a php-drmaa binding.
 It is also possible to extend it to other scheduling system.
-
+If you don't have a cluster available, jobs can also be run on the web server directly.
 
 How does it work?
 -----------------
@@ -20,22 +18,24 @@ All the job informations are stored in a database with Doctrine ORM.
 
 To submit jobs to a SGE cluster, you need to install a dedicated PHP extension (see :ref:`installation-label`).
 
-
-.. _installation-label:
 Installation
 ------------
 
-To us the Drmaa scheduler, you need to install the php4drm PHP extension (https://gforge.inria.fr/projects/php4drm). Download the source code from::
+To use the Drmaa scheduler, you need to install the php4drm PHP extension (https://gforge.inria.fr/projects/php4drm). Download the source code (drmPhpExtension_xx.tar.gz) from:
 
     https://gforge.inria.fr/frs/?group_id=1835
 
 Install it, following the instructions in the README file.
 
-Checkout a copy of the bundle code::
+Checkout a copy of the bundle code:
 
-    git submodule add gitolite@chili.genouest.org:sf2-schedulerbundle vendor/bundles/Genouest/Bundle/SchedulerBundle
+.. code-block:: bash
+
+    git submodule add git@github.com:genouest/GenouestSchedulerBundle.git vendor/bundles/Genouest/Bundle/SchedulerBundle
     
-Then register the bundle with your kernel::
+Then register the bundle with your kernel:
+
+.. code-block:: php
 
     // in AppKernel::registerBundles()
     $bundles = array(
@@ -44,7 +44,9 @@ Then register the bundle with your kernel::
         // ...
     );
 
-Make sure that you also register the namespaces with the autoloader::
+Make sure that you also register the namespaces with the autoloader:
+
+.. code-block:: php
 
     // app/autoload.php
     $loader->registerNamespaces(array(
@@ -53,7 +55,9 @@ Make sure that you also register the namespaces with the autoloader::
         // ...
     ));
 
-Import the routes defined in the bundle::
+Import the routes defined in the bundle:
+
+.. code-block:: yaml
 
     // app/config/routing.yml
     // ...
@@ -65,6 +69,8 @@ Import the routes defined in the bundle::
     
 Publish the assets in the web dir:
 
+.. code-block:: bash
+
     app/console assets:install --symlink web/
 
 
@@ -74,7 +80,9 @@ Configuration
 You need to have a properly configured doctrine orm. By default, the scheduler will use the default entity_manager.
 See below if you want to use a specific doctrine entity_manager
 
-The following configuration keys are available::
+The following configuration keys are available:
+
+.. code-block:: yaml
 
     # app/config/config.yml
     genouest_scheduler:
@@ -121,7 +129,9 @@ Usage
 Launching a job
 ~~~~~~~~~~~~~~~
 
-To launch a job, you first need to create a Job object representing the job you want to launch. This is usually done after the submission of a forms, in an action::
+To launch a job, you first need to create a Job object representing the job you want to launch. This is usually done after the submission of a forms, in an action:
+
+.. code-block:: php
 
     $scheduler = $this->get('scheduler.scheduler');
     $workDir = $scheduler->getWorkDir($job);
@@ -141,6 +151,8 @@ of the job we have just created. We use this work dir in the command line.
 
 One your Job object is ready, you only need to forward the request to the launchJob action:
 
+.. code-block:: php
+
     return $this->forward('GenouestSchedulerBundle:Scheduler:launchJob', array('job' => $job));
 
 And that's it! The job gets submitted to the configured scheduler, and you get redirected to a page tracking the status of your job.
@@ -148,7 +160,9 @@ And that's it! The job gets submitted to the configured scheduler, and you get r
 Getting the status of a job
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A status action is bundled in GenouestSchedulerBundle. You can access it like this for example::
+A status action is bundled in GenouestSchedulerBundle. You can access it like this for example:
+
+.. code-block:: php
 
     public function yourAction() {
         // ...Do some stuff
@@ -162,7 +176,9 @@ The status page automatically refresh using some JQuery code. It redirects to th
 Killing a job
 ~~~~~~~~~~~~~
 
-Depending on the scheduler, it may be possible to kill a job (not supported by "local" scheduler). To do so, just use the jobKill action::
+Depending on the scheduler, it may be possible to kill a job (not supported by "local" scheduler). To do so, just use the jobKill action:
+
+.. code-block:: php
 
     public function yourAction() {
         // ...Do some stuff
@@ -188,7 +204,9 @@ Overriding templates
 The templates provided by this bundle can be easily overriden using the standard Symfony mechanism.
 Briefly, to customize the GenouestSchedulerBundle:Scheduler:results.html.twig template, you need to create the file app/Resources/GenouestSchedulerBundle/views/Scheduler/results.html.twig.
 
-This is the list of templates that you can customize, with their description::
+This is the list of templates that you can customize, with their description:
+
+.. code-block:: text
 
     GenouestSchedulerBundle:Scheduler:layout.html.twig -> General layout of the pages
     GenouestSchedulerBundle:Scheduler:status.html.twig -> Page displaying the status of a job
@@ -205,12 +223,16 @@ Using a specific Doctrine entity_manager
 
 If you want to use a specific entity_manager, you need to override a service definition. At the end of config.yml, add the following lines:
 
+.. code-block:: yaml
+
     services:
         scheduler.entity_manager:
             alias: doctrine.orm.XX_entity_manager
 
 Replace 'doctrine.orm.XX_entity_manager' by the service id of the correct entity manager.
 This is an example of doctrine configuration with 2 entity managers, each one managing entities in a different database:
+
+.. code-block:: yaml
 
     # Doctrine Configuration
     doctrine:
@@ -244,6 +266,8 @@ This is an example of doctrine configuration with 2 entity managers, each one ma
 
 To make the GenouestSchedulerBundle use the correct entity manager, you need to define the service like this:
 
+.. code-block:: yaml
+
     services:
         scheduler.entity_manager:
             alias: doctrine.orm.scheduler_entity_manager
@@ -254,6 +278,8 @@ Overriding some SchedulerBundle routes
 Suppose you want to customize what is done by the SchedulerBundler when displaying the results (or status, ...)
 of a job. The simplest is to create a route in one of your application bundle with the same name as in the the
 SchedulerBundle.
+
+.. code-block:: php
 
     /**
      * Show results. Override Scheduler template to show more information.
@@ -267,6 +293,8 @@ SchedulerBundle.
 
 The only thing to do to make it work now is to be sure this route is loaded *before* the one in the SchedulerBundle.
 So in routing.yml, check that this overriden route appears *before* the SchedulerBundle routes import:
+
+.. code-block:: yaml
 
     _mybundle:
         resource: "@MyBundle/Controller/MyController.php"
@@ -284,6 +312,8 @@ One solution to this problem is to create a proxy "_job_results" route that will
 correct route.
 First, ensure you call Job::setProgramName() with different values in each one of your two bundles.
 Then create the proxy action in one of your controllers:
+
+.. code-block:: php
 
     /**
      * Show results. Override Scheduler template to show more information.
@@ -307,6 +337,8 @@ Then create the proxy action in one of your controllers:
     }
 
 Finally make sure the controller where you wrote this code is loaded before the other ones in routing.yml:
+
+.. code-block:: yaml
 
     _myproxybundle:
         resource: "@MyProxyBundle/Controller/MyproxyController.php"
