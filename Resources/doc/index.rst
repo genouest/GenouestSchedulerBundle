@@ -293,17 +293,17 @@ SchedulerBundle.
         //.... do something...
     }
 
-The only thing to do to make it work now is to be sure this route is loaded *before* the one in the SchedulerBundle.
-So in routing.yml, check that this overriden route appears *before* the SchedulerBundle routes import:
+The only thing to do to make it work now is to be sure this route is loaded *after* the one in the SchedulerBundle.
+So in routing.yml, check that this overriden route appears *after* the SchedulerBundle routes import:
 
 .. code-block:: yaml
 
-    _mybundle:
-        resource: "@MyBundle/Controller/MyController.php"
-        type: annotation
-
     _scheduler:
         resource: "@GenouestSchedulerBundle/Controller/SchedulerController.php"
+        type: annotation
+
+    _mybundle:
+        resource: "@MyBundle/Controller/MyController.php"
         type: annotation
 
 This works perfectly if you only override this route once. Suppose you have developped two bundles for your application,
@@ -338,20 +338,20 @@ Then create the proxy action in one of your controllers:
         return $response;
     }
 
-Finally make sure the controller where you wrote this code is loaded before the other ones in routing.yml:
+Finally make sure the controller where you wrote this code is loaded after the other ones in routing.yml:
 
 .. code-block:: yaml
 
-    _myproxybundle:
-        resource: "@MyProxyBundle/Controller/MyproxyController.php"
-        type: annotation
-    _mybundle:
-        resource: "@MyBundle/Controller/MyController.php"
+    _scheduler:
+        resource: "@GenouestSchedulerBundle/Controller/SchedulerController.php"
         type: annotation
     _myotherbundle:
         resource: "@MyOtherBundle/Controller/MyOtherController.php"
         type: annotation
-    _scheduler:
-        resource: "@GenouestSchedulerBundle/Controller/SchedulerController.php"
+    _mybundle:
+        resource: "@MyBundle/Controller/MyController.php"
+        type: annotation
+    _myproxybundle:
+        resource: "@MyProxyBundle/Controller/MyproxyController.php"
         type: annotation
 
