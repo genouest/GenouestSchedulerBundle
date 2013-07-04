@@ -1,0 +1,23 @@
+{
+    "name": "genouest/scheduler-bundle",
+    "description": "This bundle allows you to launch command lines on a cluster.",
+    "keywords": ["genouest", "scheduler", "drmaa"],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "genouest",
+            "homepage": "http://www.genouest.org"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/symfony": ">=2.2"
+    },
+    "autoload": {
+        "psr-0": {
+            "Genouest\\Bundle\\SchedulerBundle": ""
+        }
+    },
+    "target-dir" : "Genouest/Bundle/SchedulerBundle"
+}
