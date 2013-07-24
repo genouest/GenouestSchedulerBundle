@@ -35,12 +35,12 @@ class ResultFile extends BaseResultFile {
     protected $job;
 
     /**
-     * @ORM\Column(name="display_name", type="string", length="255")
+     * @ORM\Column(name="display_name", type="string", length=255)
      */
     protected $displayName;
     
     /**
-     * @ORM\Column(name="fs_name", type="string", length="255")
+     * @ORM\Column(name="fs_name", type="string", length=255)
      */
     protected $fsName;
 

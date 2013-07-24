@@ -35,12 +35,12 @@ class ResultViewer extends BaseResultViewer {
     protected $job;
 
     /**
-     * @ORM\Column(name="url", type="string", length="255")
+     * @ORM\Column(name="url", type="string", length=255)
      */
     protected $url;
 
     /**
-     * @ORM\Column(name="display_name", type="string", length="255")
+     * @ORM\Column(name="display_name", type="string", length=255)
      */
     protected $displayName;
 

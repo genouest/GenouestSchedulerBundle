@@ -25,18 +25,18 @@ class Job extends BaseJob {
 
     /**
      * @ORM\Id
-     * @ORM\Column(name="job_uid", type="string", length="255")
+     * @ORM\Column(name="job_uid", type="string", length=255)
      * @ORM\GeneratedValue(strategy="NONE")
      */
     protected $jobUid;
 
     /**
-     * @ORM\Column(name="scheduler_jobid", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="scheduler_jobid", type="string", length=255, nullable=TRUE)
      */
     protected $schedulerJobId;
 
     /**
-     * @ORM\Column(name="user_id", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="user_id", type="string", length=255, nullable=TRUE)
      */
     protected $userId;
 
@@ -46,27 +46,27 @@ class Job extends BaseJob {
     protected $command;
 
     /**
-     * @ORM\Column(name="program_name", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="program_name", type="string", length=255, nullable=TRUE)
      */
     protected $programName;
 
     /**
-     * @ORM\Column(name="title", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="title", type="string", length=255, nullable=TRUE)
      */
     protected $title;
 
     /**
-     * @ORM\Column(name="email", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="email", type="string", length=255, nullable=TRUE)
      */
     protected $email;
 
     /**
-     * @ORM\Column(name="back_url", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="back_url", type="string", length=255, nullable=TRUE)
      */
     protected $backUrl;
 
     /**
-     * @ORM\Column(name="result_page", type="string", length="255", nullable=TRUE)
+     * @ORM\Column(name="result_page", type="string", length=255, nullable=TRUE)
      */
     protected $resultPage;
 
