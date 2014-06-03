@@ -59,7 +59,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * Note that the Job object will get modified at the end of this function.
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object (this object is modified by this function).
-     * @returns Genouest\Bundle\SchedulerBundle\Entity\Job A launched Job object
+     * @return Genouest\Bundle\SchedulerBundle\Entity\Job A launched Job object
      */
     public function execute(Job $job) {
         
@@ -112,7 +112,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * Get the job status
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns int Job status
+     * @return int Job status
      */
     public function getStatus(Job $job) {
         return qstat($job->getSchedulerJobId());
@@ -122,7 +122,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * Try to kill a job. Depending on the scheduling system, this may not be possible
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns bool True if the given job has been killed, false otherwise.
+     * @return bool True if the given job has been killed, false otherwise.
      */
     public function kill(Job $job) {
         return qdel($job->getSchedulerJobId());
@@ -132,7 +132,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * Is the given job finished?
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns bool True if the given job is finished, false otherwise.
+     * @return bool True if the given job is finished, false otherwise.
      */
     public function isFinished(Job $job) {
         $status = $this->getStatus($job);
@@ -144,7 +144,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * Get a string describing the job status retrieved from DRMAA
      *
      * @param int a job status code
-     * @returns string Job status as a string
+     * @return string Job status as a string
      */
     public function getStatusAsText($status) {
         if (array_key_exists($status, $this->textJobState)) {
@@ -163,7 +163,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * Get the working directory of the job
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The work dir of the given job.
+     * @return string The work dir of the given job.
      */
     public function getWorkDir(Job $job) {
         $workDir = $this->addTrailingSlash($this->container->getParameter('scheduler.work_dir')).$job->getProgramName().'/'.$job->getJobUid().'/';
@@ -178,7 +178,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * Get the dir accessible by all the machines
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The temp dir of the given job.
+     * @return string The temp dir of the given job.
      */
     public function getTempDir(Job $job) {
         $tempDir = $this->addTrailingSlash($this->container->getParameter('scheduler.drmaa_temp_dir')).$job->getProgramName().'/'.$job->getJobUid().'/';
@@ -192,7 +192,7 @@ class DrmaaScheduler implements SchedulerInterface {
     /**
      * Add a trailing slash to an URL (only if there isn't already one).
      *
-     * @returns string Result Url.
+     * @return string Result Url.
      */
     protected function addTrailingSlash($path) {
         $strEnd = substr($path, -1);
@@ -206,7 +206,7 @@ class DrmaaScheduler implements SchedulerInterface {
      * Get the url prefix to access a job results (no hostname)
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The results url prefix of the given job.
+     * @return string The results url prefix of the given job.
      */
     public function getResultUrl(Job $job) {
         

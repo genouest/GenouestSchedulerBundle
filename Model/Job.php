@@ -21,7 +21,7 @@ abstract class Job {
     /**
      * Generate a job unique ID (jobUid). Nothing to do with job ID (which is specific to the scheduler).
      *
-     * @returns string This job unique ID
+     * @return string This job unique ID
      */
     public function generateJobUid() {
         $prefix = $this->getProgramName()."-".rand();
@@ -43,7 +43,7 @@ abstract class Job {
     /**
      * Can this job be launched?
      *
-     * @returns bool True if this job can be launched, false otherwise.
+     * @return bool True if this job can be launched, false otherwise.
      */
     public function canBeLaunched() {
         return (empty($this->jobUid) || empty($this->schedulerJobId));
@@ -52,7 +52,7 @@ abstract class Job {
     /**
      * Has this job been already launched?
      *
-     * @returns bool True if the job has already been launched, false otherwise.
+     * @return bool True if the job has already been launched, false otherwise.
      */
     public function isLaunched() {
         return ($this->isValid() && !empty($this->command));
@@ -61,7 +61,7 @@ abstract class Job {
     /**
      * Is this job a valid one?
      *
-     * @returns bool True if the job is valid, false otherwise.
+     * @return bool True if the job is valid, false otherwise.
      */
     public function isValid() {
         return (!empty($this->jobUid) && !empty($this->schedulerJobId));
@@ -70,7 +70,7 @@ abstract class Job {
     /**
      * Is there a user ID?
      *
-     * @returns bool True if there is a user ID, false otherwise.
+     * @return bool True if there is a user ID, false otherwise.
      */
     public function hasUserId() {
         return !empty($this->userId);
@@ -79,7 +79,7 @@ abstract class Job {
     /**
      * Are there some result viewers?
      *
-     * @returns bool True if there are some result viewers, false otherwise.
+     * @return bool True if there are some result viewers, false otherwise.
      */
     public function hasResultViewers() {
         return count($this->resultViewers) > 0;
@@ -88,7 +88,7 @@ abstract class Job {
     /**
      * Are there some result files?
      *
-     * @returns bool True if there are some result files, false otherwise.
+     * @return bool True if there are some result files, false otherwise.
      */
     public function hasResultFiles() {
         return count($this->resultFiles) > 0;
@@ -98,7 +98,7 @@ abstract class Job {
      * Check given mail validity.
      *
      * @param $to Email address to check
-     * @returns bool True if email is valid. False otherwise.
+     * @return bool True if email is valid. False otherwise.
      */
     public function checkMail($to) {
         if (preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-])+\.[a-zA-Z]+$/",$to))
@@ -110,7 +110,7 @@ abstract class Job {
     /**
      * Is there a valid email?
      *
-     * @returns bool True if there is a valid email, false otherwise.
+     * @return bool True if there is a valid email, false otherwise.
      */
     public function hasValidEmail() {
         return (!empty($this->email) && $this->checkMail($this->email));
@@ -121,7 +121,7 @@ abstract class Job {
      *
      * @param $subject Email subject
      * @param $content Email contents
-     * @returns bool True if email is valid. False otherwise.
+     * @return bool True if email is valid. False otherwise.
      */
     public function setEmailContent($subject, $content) {
         if ($this->hasValidEmail()) {
@@ -137,7 +137,7 @@ abstract class Job {
     /**
      * Get the email subject
      *
-     * @returns string The subject of the email that will be sent upon job completion
+     * @return string The subject of the email that will be sent upon job completion
      */
     public function getMailSubject() {
         return $this->mailSubject;
@@ -146,7 +146,7 @@ abstract class Job {
     /**
      * Get the email body
      *
-     * @returns string The body of the email that will be sent upon job completion
+     * @return string The body of the email that will be sent upon job completion
      */
     public function getMailBody() {
         return $this->mailBody;
@@ -155,7 +155,7 @@ abstract class Job {
     /**
      * Reset the job to the state just before it was launched
      *
-     * @returns bool True if the job was resetted successfully, false otherwise
+     * @return bool True if the job was resetted successfully, false otherwise
      */
     public function reset() {
         

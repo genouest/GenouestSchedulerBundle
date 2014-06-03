@@ -21,7 +21,7 @@ interface SchedulerInterface {
      * Launch a job.
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns Genouest\Bundle\SchedulerBundle\Entity\Job A launched Job object
+     * @return Genouest\Bundle\SchedulerBundle\Entity\Job A launched Job object
      */
     public function execute(Job $job);
     
@@ -29,7 +29,7 @@ interface SchedulerInterface {
      * Get the job status as returned by the underlying scheduling system.
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns int Job status
+     * @return int Job status
      */
     public function getStatus(Job $job);
     
@@ -37,7 +37,7 @@ interface SchedulerInterface {
      * Try to kill a job. Depending on the scheduling system, this may not be possible
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns bool True if the given job has been killed, false otherwise.
+     * @return bool True if the given job has been killed, false otherwise.
      */
     public function kill(Job $job);
     
@@ -45,7 +45,7 @@ interface SchedulerInterface {
      * Is the given job finished?
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns bool True if the given job is finished, false otherwise.
+     * @return bool True if the given job is finished, false otherwise.
      */
     public function isFinished(Job $job);
   
@@ -53,7 +53,7 @@ interface SchedulerInterface {
      * Get a string representing the given status code
      *
      * @param int a job status code
-     * @returns string Job status as a string
+     * @return string Job status as a string
      */
     public function getStatusAsText($status);
     
@@ -61,7 +61,7 @@ interface SchedulerInterface {
      * Get the working directory of the job
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The working directory of the given job.
+     * @return string The working directory of the given job.
      */
     public function getWorkDir(Job $job);
 
@@ -69,7 +69,7 @@ interface SchedulerInterface {
      * Get the url prefix to access a job results (with or without the hostname)
      *
      * @param Genouest\Bundle\SchedulerBundle\Entity\Job A job object
-     * @returns string The results url prefix of the given job.
+     * @return string The results url prefix of the given job.
      */
     public function getResultUrl(Job $job);
 
