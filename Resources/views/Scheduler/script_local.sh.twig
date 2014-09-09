@@ -25,7 +25,7 @@ exec 4> {{ workDir }}stderr.txt
 
 {% if job.hasValidEmail %}
 
-echo -e '{{ mailBody }}' | {{ mailBin }} -s '{{ mailSubject }}' {{ job.email }} {% if fromEmail %} -- {% for address, name in fromEmail %} -F '{{ name }}' -f '{{ address }}'{% endfor %}{% endif %}
+echo -e '{{ mailBody }}' | {{ mailBin }} {% if fromEmail %}{% for address, name in fromEmail %} -r '{{ address }} ({{ name }})'{% endfor %}{% endif %} -s '{{ mailSubject }}' {{ job.email }}
 
 {% endif %}
 
