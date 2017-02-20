@@ -20,7 +20,7 @@
     {% if job.hasValidEmail %}
         <p>An email will be sent to {{ job.email }} upon job completion.</p>
     {% endif %}
-    
+
     <p>
         <img src="{{ asset('bundles/genouestscheduler/images/loader.gif') }}" alt="loading" width=220 height=19 style="vertical-align: middle;" />
     </p>
@@ -40,7 +40,7 @@
 
 <script type="text/javascript">
     //<![CDATA[
-    jQuery(document).ready(statusTracker('{{ path('_job_status', { 'uid': job.jobuid, '_format': 'js'}) }}'))
+    jQuery(document).ready(statusTracker('{{ path('_job_status', { 'uid': job.jobuid, '_format': 'js'}, true) }}'))
     //]]>
 </script>
 

@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use Genouest\Bundle\SchedulerBundle\Exception\InvalidJobException;
 use Genouest\Bundle\SchedulerBundle\Entity\Job;
@@ -32,15 +33,15 @@ class SchedulerController extends Controller
      * @param Genouest\Bundle\SchedulerBundle\Model\Job A job to launch
      */
     public function launchJobAction(Job $job) {
-    
+
         $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
         $em = $this->get('scheduler.entity_manager');
-        
+
         $resultUrlPrefix = $scheduler->getResultUrl($job);
         if (false === strpos($resultUrlPrefix, '://')) // If no host specified, assume it's the same
             $resultUrlPrefix = $this->get('request')->getScheme().'://'.$this->get('request')->getHttpHost().$resultUrlPrefix;
-        
+
         // Prepare the mail to be sent when job finished (added to job command line)
         if ($job->hasValidEmail()) {
             // Fill the mail body
@@ -52,18 +53,18 @@ class SchedulerController extends Controller
                 $title = $job->getJobUid();
             }
             $subject =  $job->getProgramName(). ": completion of job ".$title;
-            
+
             $body = $this->render('GenouestSchedulerBundle:Scheduler:email.html.twig', array('job' => $job, 'resultUrlPrefix' => $resultUrlPrefix))->getContent();
-            
+
             $job->setEmailContent($subject, $body);
         }
-        
+
         $job->setResultPage($resultUrlPrefix);
-        
+
         // Assign the job to an user if we are logged in
         if ($this->get('security.context')->getToken() && $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY'))
             $job->setUserId($this->get('security.context')->getToken()->getUsername());
-        
+
         // Launch the job
         try {
             $job = $scheduler->execute($job);
@@ -72,10 +73,10 @@ class SchedulerController extends Controller
             // Save the job
             $em->persist($job);
             $em->flush();
-            
+
             return $this->render('GenouestSchedulerBundle:Scheduler:error.html.twig', array('job' => $job, 'uid' => $job->getJobUid(), 'error' => $e->getMessage()));
         }
-        
+
         // Save the job
         $em->persist($job);
         $em->flush();
@@ -93,45 +94,45 @@ class SchedulerController extends Controller
      * @param $uid string The uid of the job to watch
      */
     public function jobStatusAction($uid) {
-    
+
         // Load job from db
         $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
         $job = $jobRepo->find($uid);
-        
+
         // Check that job is valid
         if (!$job || !$job->isLaunched())
             return $this->render('GenouestSchedulerBundle:Scheduler:error.html.twig', array('job' => $job, 'uid' => $uid, 'error' => 'Job '.$uid.' is not available.'));
-        
-        
+
+
         $textStatus = $scheduler->getStatusAsText($scheduler->getStatus($job));
         $isFinished = $scheduler->isFinished($job);
-        $resultUrl = $this->generateUrl('_job_results', array('uid' => $job->getJobUid()));
-        
+        $resultUrl = $this->generateUrl('_job_results', array('uid' => $job->getJobUid()), UrlGeneratorInterface::RELATIVE_PATH);
+
         if ($this->get('request')->getRequestFormat() == 'js') {
-        
+
             // Ajax mode
             $resData = array();
             $resData['status'] = $textStatus;
             $resData['shouldRedirect'] = $isFinished;
             $resData['resultsUrl'] = $resultUrl;
-            
+
             $response = new Response(json_encode($resData));
             $response->headers->set('Content-Type', 'application/json; charset=utf-8');
-            
+
             // Ensure the browser doesn't keep json content in cache
             $date = new \DateTime();
             $date->modify('-6000 seconds');
             $response->setExpires($date);
             $response->headers->addCacheControlDirective('must-revalidate', true);
-            
+
             return $response;
         }
         else if ($isFinished) {
             // Job finished and not in ajax mode: simply redirect
             return new RedirectResponse($resultUrl);
         }
-        
+
         return $this->render('GenouestSchedulerBundle:Scheduler:status.html.twig', array('job' => $job, 'status' => $textStatus));
     }
 
@@ -144,26 +145,26 @@ class SchedulerController extends Controller
      * @param $uid string The uid of the job to kill
      */
     public function jobKillAction($uid) {
-    
+
         // Load job from db
         $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
         $job = $jobRepo->find($uid);
-        
+
         // Check that job is valid
         if (!$job || !$job->isLaunched())
             return $this->render('GenouestSchedulerBundle:Scheduler:error.html.twig', array('job' => $job, 'uid' => $uid, 'error' => 'Job '.$uid.' is not available.'));
-        
+
         $isFinished = $scheduler->isFinished($job);
-        
+
         if ($isFinished) {
             // Job finished (already killed, or finished before accessing this page): simply redirect to result page
             $resultUrl = $this->generateUrl('_job_results', array('uid' => $job->getJobUid()));
             return new RedirectResponse($resultUrl);
         }
-        
+
         $success = $scheduler->kill($job);
-        
+
         return $this->render('GenouestSchedulerBundle:Scheduler:kill.html.twig', array('job' => $job, 'success' => $success));
     }
 
@@ -178,22 +179,22 @@ class SchedulerController extends Controller
         $scheduler = $this->get('scheduler.scheduler');
         $jobRepo = $this->get('job.repository');
         $job = $jobRepo->find($uid);
-        
+
         // Check that job is valid
         if (!$job || !$job->isLaunched())
             return $this->render('GenouestSchedulerBundle:Scheduler:error.html.twig', array('job' => $job, 'uid' => $uid, 'error' => 'Job '.$uid.' is not available.'));
-        
+
         // Finished?
         if (!$scheduler->isFinished($job)) {
             return new RedirectResponse($this->generateUrl('_job_status', array('uid' => $job->getJobUid())));
         }
-        
+
         $textStatus = $scheduler->getStatusAsText($scheduler->getStatus($job));
         $resultUrl = $scheduler->getResultUrl($job);
-        
+
         return $this->render('GenouestSchedulerBundle:Scheduler:results.html.twig', array('job' => $job, 'status' => $textStatus, 'resultUrl' => $resultUrl));
     }
-    
+
     /**
      * Show the job history of current user
      *
@@ -203,13 +204,13 @@ class SchedulerController extends Controller
     public function historyAction() {
         $jobRepo = $this->get('job.repository');
         $scheduler = $this->get('scheduler.scheduler');
-        
+
         $jobs = array();
-        
+
         // Try to find the jobs of current user, if he is authenticated and not anonymous
         if ($this->get('security.context')->getToken() && $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY'))
             $jobs = $jobRepo->getJobsForUser($this->get('security.context')->getToken()->getUsername(), $this->container->getParameter('scheduler.history_length'));
-        
+
         return $this->render('GenouestSchedulerBundle:Scheduler:history.html.twig', array('jobs' => $jobs, 'scheduler' => $scheduler));
     }
 }
